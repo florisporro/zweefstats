@@ -1,0 +1,36 @@
+export interface Stats {
+	uuid: string;
+	datum: string;
+	year: number;
+	volg_nummer: number;
+	date_created: string;
+	date_updated: string;
+	is_prive: boolean;
+	vertrek_vliegveld: string;
+	aankomst_vliegveld: string;
+	callsign: string;
+	registratie: string;
+	type: string;
+	sleep_uuid: string | null;
+	gezagvoerder_id: string | null;
+	gezagvoerder_naam: string | null;
+	tweede_inzittende_id: number | null;
+	tweede_inzittende_naam: string | null;
+	betalend_lid_id: string | null;
+	start_methode: string;
+	category: string | null;
+	is_fis: boolean;
+	is_training: boolean;
+	is_examen: boolean;
+	is_profcheck: boolean;
+	is_overland: boolean;
+	afstand: number;
+	starts: number;
+	start_tijd: string;
+	landings_tijd: string;
+	vluchtduur: number;
+	blocktime: number;
+	height: number;
+	bijzonderheden: string | null;
+	notitie: string | null;
+}
