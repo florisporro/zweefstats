@@ -1,11 +1,13 @@
-export interface Stats {
+export type FlightProps = string | number | boolean | undefined | null;
+export interface Flight {
+	[key: string]: FlightProps;
 	uuid: string;
 	datum: string;
 	year: number;
 	volg_nummer: number;
 	date_created: string;
 	date_updated: string;
-	is_prive: boolean;
+	is_prive: boolean | string;
 	vertrek_vliegveld: string;
 	aankomst_vliegveld: string;
 	callsign: string;
@@ -19,11 +21,11 @@ export interface Stats {
 	betalend_lid_id: string | null;
 	start_methode: string;
 	category: string | null;
-	is_fis: boolean;
-	is_training: boolean;
-	is_examen: boolean;
-	is_profcheck: boolean;
-	is_overland: boolean;
+	is_fis: boolean | string;
+	is_training: boolean | string;
+	is_examen: boolean | string;
+	is_profcheck: boolean | string;
+	is_overland: boolean | string;
 	afstand: number;
 	starts: number;
 	start_tijd: string;
