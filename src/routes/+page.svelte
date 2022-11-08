@@ -7,7 +7,7 @@
 
 	import Papa from 'papaparse';
 
-	import type { Stats } from '../lib/interface';
+	import type { Flight } from '../lib/interface';
 
 	let contents: string;
 	let error: string;

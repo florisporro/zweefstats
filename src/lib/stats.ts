@@ -89,14 +89,29 @@ export function getUnique(data: { [key: string]: FlightProps }[], property: stri
 	return [...new Set(data.map((item) => item[property]))];
 }
 
+export function formatTime(time: number) {
+	const hours = Math.floor(time / 60);
+	const minutes = time % 60;
+	return `${hours} uur en ${minutes} minuten`;
+}
+
 export interface Times {
+	flights: Flight[];
+	flightsCount: number;
 	picFlights: Flight[];
+	picFlightsCount: number;
 	dboFlights: Flight[];
+	dboFlightsCount: number;
 	paxFlights: Flight[];
+	paxFlightsCount: number;
 	totalTime: number;
+	totalTimeFormatted: string;
 	picTime: number;
+	picTimeFormatted: string;
 	dboTime: number;
+	dboTimeFormatted: string;
 	paxTime: number;
+	paxTimeFormatted: string;
 }
 
 export function getTimes(data: Flight[], pilot: string): Times {
@@ -104,10 +119,10 @@ export function getTimes(data: Flight[], pilot: string): Times {
 	const picFlights = data.filter(a => a.gezagvoerder_naam === pilot)
 
 	// Find all flights where pilot was DBO
-	const dboFlights = data.filter(a => a.tweede_inzittende_naam === pilot && a.is_training === true)
+	const dboFlights = data.filter(a => a.tweede_inzittende_naam === pilot && (a.is_training === true || a.is_fis === true))
 
 	// Find all flights where pilot was PAX
-	const paxFlights = data.filter(a => a.tweede_inzittende_naam === pilot && a.is_training === false)
+	const paxFlights = data.filter(a => a.tweede_inzittende_naam === pilot && a.is_training === false && a.is_fis === false)
 
 	// Sum flight time by category
 	const totalTime = sumField(data, 'vluchtduur')
@@ -115,15 +130,34 @@ export function getTimes(data: Flight[], pilot: string): Times {
 	const dboTime = sumField(dboFlights, 'vluchtduur')
 	const paxTime = sumField(paxFlights, 'vluchtduur')
 
+	const totalTimeFormatted = formatTime(totalTime)
+	const picTimeFormatted = formatTime(picTime)
+	const dboTimeFormatted = formatTime(dboTime)
+	const paxTimeFormatted = formatTime(paxTime)
+
+
 	return {
+		flights: data,
+		flightsCount: data.length,
 		picFlights,
+		picFlightsCount: picFlights.length,
 		dboFlights,
+		dboFlightsCount: dboFlights.length,
 		paxFlights,
+		paxFlightsCount: paxFlights.length,
 		totalTime,
 		picTime,
 		dboTime,
-		paxTime
+		paxTime,
+		totalTimeFormatted,
+		picTimeFormatted,
+		dboTimeFormatted,
+		paxTimeFormatted
 	}
+}
+
+export interface SubStats {
+
 }
 
 export interface Stats extends Times {
@@ -132,10 +166,10 @@ export interface Stats extends Times {
 	xcountryFlights: Flight[],
 	xcountryattemptFlights: Flight[],
 	outlandings: Flight[],
-	years: string[],
-	flightsByYear: Flight[][],
-	airplanes: string[],
-	flightsByAirplane: Flight[][],
+	years: FlightProps[],
+	flightsByYear: { [key: string | number]: Times },
+	airplanes: FlightProps[],
+	flightsByAirplane: { [key: string | number]: Times },
 	hasLicense: boolean,
 	examFlights: Flight[],
 	lastExamIndex: number,
@@ -174,15 +208,24 @@ export function getStatistics(data: Flight[]): Stats {
 
 	// Get flights by year
 	const years = getUnique(data, 'year')
-	const flightsByYear = years.map(year => {
-		return data.filter(a => a.year === year)
-	})
+	const flightsByYear: Stats["flightsByYear"] = {}
+	for (const year of years) {
+		if (typeof year === 'string' || typeof year === 'number') {
+			const flightsThisYear = data.filter(a => a.year === year)
+			flightsByYear[year] = getTimes(flightsThisYear, pilot)
+		}
+	}
 
-	// Get flights by airplane
-	const airplanes = getUnique(data, 'type')
-	const flightsByAirplane = airplanes.map(airplane => {
-		return data.filter(a => a.type === airplane)
-	})
+	// Get flights by year
+	let airplanes = getUnique(data, 'type')
+	airplanes = airplanes.sort()
+	const flightsByAirplane: Stats["flightsByAirplane"] = {}
+	for (const airplane of airplanes) {
+		if (typeof airplane === 'string') {
+			const flightsThisType = data.filter(a => a.type === airplane)
+			flightsByAirplane[airplane] = getTimes(flightsThisType, pilot)
+		}
+	}
 
 	let hasLicense = false
 	if (airplanes.includes("LS-8a")) hasLicense = true

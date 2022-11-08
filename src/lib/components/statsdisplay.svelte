@@ -7,6 +7,7 @@
 	import SingleValueCard from './display/singlevaluecard.svelte';
 	import TimeDisplay from './display/timedisplay.svelte';
 	import KeyValue from './display/keyvalue.svelte';
+	import Fileselect from './fileselect.svelte';
 
 	export let data: Flight[];
 
@@ -17,23 +18,23 @@
 </script>
 
 <div class="mt-6">
-	<div class="mb-10">
+	<div>
 		<h2>Hallo, {statistics.pilot}</h2>
 		<h3>Dit zijn jouw totalen:</h3>
 	</div>
-	<div class="grid grid-cols-2 gap-6 mb-12">
+	<div class="segment-large">
 		<SingleValueCard name="Totaal starts">{data.length}</SingleValueCard>
 		<SingleValueCard name="Totaal tijd"><TimeDisplay value={statistics.picTime} /></SingleValueCard>
 	</div>
-	<div class="grid grid-cols-2 gap-6 mb-12">
+	<div class="segment-large mb-12">
 		<SingleValueCard name="Totaal DBO starts">{statistics.dboFlights.length}</SingleValueCard>
 		<SingleValueCard name="DBO tijd"><TimeDisplay value={statistics.dboTime} /></SingleValueCard>
 	</div>
-	<div class="grid grid-cols-2 gap-6 mb-12">
+	<div class="segment-large mb-12">
 		<SingleValueCard name="Totaal PIC starts">{statistics.picFlights.length}</SingleValueCard>
 		<SingleValueCard name="PIC tijd"><TimeDisplay value={statistics.picTime} /></SingleValueCard>
 	</div>
-	<div class="grid grid-cols-4 gap-6 mb-12">
+	<div class="segment-small">
 		<SingleValueCard name="Examen vluchten">{statistics.examFlights.length}</SingleValueCard>
 		<SingleValueCard name="Examen gehaald">{statistics.hasLicense ? '✅' : '❌'}</SingleValueCard>
 		<SingleValueCard name="Totaal starts als PAX">{statistics.paxFlights.length}</SingleValueCard>
@@ -46,10 +47,35 @@
 		<SingleValueCard name="Laatste overland">{statistics.xcountryFlights[0].datum}</SingleValueCard>
 		<SingleValueCard name="Buitenlandingen">{statistics.outlandings.length}</SingleValueCard>
 	</div>
-	<h3>Dit zijn je starts per jaar:</h3>
-	<KeyValue data={statistics.flightsByYear} />
-	<h3>Dit zijn je starts per startmiddel:</h3>
-	<h3>Dit zijn je starts per vliegtuigtype:</h3>
+	<div class="segment-fullwidth">
+		<h3>Dit zijn je starts per jaar:</h3>
+		<KeyValue
+			data={statistics.flightsByYear}
+			display={[
+				{ key: 'flightsCount', name: 'Vluchten' },
+				{ key: 'totalTimeFormatted', name: 'Tijd' },
+				{ key: 'dboFlightsCount', name: 'DBO Vluchten' },
+				{ key: 'picFlightsCount', name: 'PIC Vluchten' },
+				{ key: 'paxFlightsCount', name: 'PAX Vluchten' }
+			]}
+		/>
+	</div>
+	<div class="segment-fullwidth">
+		<h3>Dit zijn je starts per startmiddel:</h3>
+	</div>
+	<div class="segment-fullwidth">
+		<h3>Dit zijn je starts per vliegtuigtype:</h3>
+		<KeyValue
+			data={statistics.flightsByAirplane}
+			display={[
+				{ key: 'flightsCount', name: 'Vluchten' },
+				{ key: 'totalTimeFormatted', name: 'Tijd' },
+				{ key: 'dboFlightsCount', name: 'DBO Vluchten' },
+				{ key: 'picFlightsCount', name: 'PIC Vluchten' },
+				{ key: 'paxFlightsCount', name: 'PAX Vluchten' }
+			]}
+		/>
+	</div>
 	<h3>Dit zijn je starts per vliegveld:</h3>
 	<h3>Dit zijn je statistieken sinds je laatste examen:</h3>
 	<p>Let op: het systeem weet niet of je geslaagd bent...</p>
@@ -81,5 +107,16 @@
 	}
 	h3 {
 		@apply text-white text-3xl text-center;
+	}
+
+	.segment-fullwidth {
+		@apply mb-12;
+	}
+
+	.segment-small {
+		@apply grid grid-cols-4 gap-6 mb-12;
+	}
+	.segment-large {
+		@apply grid grid-cols-2 gap-6 mb-12;
 	}
 </style>
