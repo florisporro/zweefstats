@@ -1,5 +1,3 @@
-import type { Flight, FlightProps } from './interface';
-
 export function sanitizeData(results: Flight[]): Flight[] {
 	const data: Flight[] = [];
 	results.forEach((row: Flight) => {
@@ -95,25 +93,6 @@ export function formatTime(time: number) {
 	return `${hours} uur en ${minutes} minuten`;
 }
 
-export interface Times {
-	flights: Flight[];
-	flightsCount: number;
-	picFlights: Flight[];
-	picFlightsCount: number;
-	dboFlights: Flight[];
-	dboFlightsCount: number;
-	paxFlights: Flight[];
-	paxFlightsCount: number;
-	totalTime: number;
-	totalTimeFormatted: string;
-	picTime: number;
-	picTimeFormatted: string;
-	dboTime: number;
-	dboTimeFormatted: string;
-	paxTime: number;
-	paxTimeFormatted: string;
-}
-
 export function getTimes(data: Flight[], pilot: string): Times {
 	// Find all flights where pilot was PIC
 	const picFlights = data.filter(a => a.gezagvoerder_naam === pilot)
@@ -152,28 +131,6 @@ export function getTimes(data: Flight[], pilot: string): Times {
 		totalTimeFormatted,
 		picTimeFormatted,
 		dboTimeFormatted,
-		paxTimeFormatted
-	}
-}
-
-export interface SubStats {
-
-}
-
-export interface Stats extends Times {
-	pilot: string;
-	timesAfterExam: Times,
-	xcountryFlights: Flight[],
-	xcountryattemptFlights: Flight[],
-	outlandings: Flight[],
-	years: FlightProps[],
-	flightsByYear: { [key: string | number]: Times },
-	airplanes: FlightProps[],
-	flightsByAirplane: { [key: string | number]: Times },
-	hasLicense: boolean,
-	examFlights: Flight[],
-	lastExamIndex: number,
-	flightsAfterExam: Flight[],
 }
 
 export function getStatistics(data: Flight[]): Stats {
