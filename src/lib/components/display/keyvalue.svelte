@@ -1,28 +1,38 @@
 <script lang="ts">
 	interface KeyValueData {
 		[key: string | number]: {
-			[key: string | number]: string | number;
+			[key: string | number]: any;
 		};
 	}
 
 	export let data: KeyValueData = {};
 	export let display: { key: string; name: string }[] = [];
+	export let itemName: string = 'Item';
 
 	let cols = 'grid-cols-4';
 
 	$: cols = `grid-cols-${display.length + 1}`;
 </script>
 
-<div class="bg-white rounded-2xl shadow-lg px-8 py-4 grid {cols} gap-2">
-	<!-- Header -->
-	<div class="font-bold">Item</div>
-	{#each display as key}
-		<div class="font-bold">{key.name}</div>
-	{/each}
-	{#each Object.entries(data) as [key, value]}
-		<pre>{key}</pre>
-		{#each display as key}
-			<pre>{value[key.key]}</pre>
-		{/each}
-	{/each}
+<div class="overflow-x-auto">
+	<table class="table table-zebra table-auto w-full">
+		<thead class="font-bold text-left">
+			<tr>
+				<th>{itemName}</th>
+				{#each display as key}
+					<th>{key.name}</th>
+				{/each}
+			</tr>
+		</thead>
+		<tbody>
+			{#each Object.entries(data) as [key, value]}
+				<tr>
+					<td><pre>{key}</pre></td>
+					{#each display as key}
+						<td><pre>{value[key.key]}</pre></td>
+					{/each}
+				</tr>
+			{/each}
+		</tbody>
+	</table>
 </div>

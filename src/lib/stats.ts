@@ -18,32 +18,37 @@ export function sumTotal(array: number[]): number {
 
 type ObjectArrayWithNumberField = {
 	[key: string]: FlightProps;
-}[]
+}[];
 
 export function sumField(array: ObjectArrayWithNumberField, field: string): number {
-	const fieldArray = array.map(a => {
+	const fieldArray = array.map((a) => {
 		if (typeof a[field] === 'number') {
 			return a[field];
 		}
-		return 0
+		return 0;
 	}) as number[];
-	const sum = sumTotal(fieldArray)
-	return sum
+	const sum = sumTotal(fieldArray);
+	return sum;
 }
 
 type dateType = string | number | Date;
 
 type ObjectArrayWithDate = {
 	[key: string]: dateType;
-}[]
+}[];
 
-export function filterByDateRange(array: ObjectArrayWithDate, datefield: string, start: dateType, end: dateType) {
-	return array.filter(item => {
-		const date = new Date(item[datefield]).getTime()
-		const startDate = new Date(start).getTime()
-		const endDate = new Date(end).getTime()
+export function filterByDateRange(
+	array: ObjectArrayWithDate,
+	datefield: string,
+	start: dateType,
+	end: dateType
+) {
+	return array.filter((item) => {
+		const date = new Date(item[datefield]).getTime();
+		const startDate = new Date(start).getTime();
+		const endDate = new Date(end).getTime();
 		return date >= startDate && date <= endDate;
-	})
+	});
 }
 
 export function getCalendarYear(date: dateType) {
@@ -52,15 +57,15 @@ export function getCalendarYear(date: dateType) {
 	const calendarYear = {
 		start: new Date(year, 0, 1, 0, 0, 1),
 		end: new Date(year, 11, 31, 23, 59, 59)
-	}
-	return calendarYear
+	};
+	return calendarYear;
 }
 
 export function getLastYear(date: dateType) {
-	date = new Date(date)
+	date = new Date(date);
 	const year = date.getFullYear();
 
-	return new Date(date.setFullYear(year - 1))
+	return new Date(date.setFullYear(year - 1));
 }
 
 export function getLastMonth(date: dateType) {
@@ -70,17 +75,17 @@ export function getLastMonth(date: dateType) {
 	return new Date(date.getFullYear(), prevMonth, date.getDay());
 }
 
-export function topKFrequent(items: (string)[]) {
-	const hash: { [key: string]: number } = {}
+export function topKFrequent(items: string[]) {
+	const hash: { [key: string]: number } = {};
 
 	for (const item of items) {
-		if (!hash[item]) hash[item] = 0
-		hash[item]++
+		if (!hash[item]) hash[item] = 0;
+		hash[item]++;
 	}
 
-	const hashToArray = Object.entries(hash)
-	const sortedArray = hashToArray.sort((a, b) => b[1] - a[1])
-	return sortedArray.map(a => a[0])
+	const hashToArray = Object.entries(hash);
+	const sortedArray = hashToArray.sort((a, b) => b[1] - a[1]);
+	return sortedArray.map((a) => a[0]);
 }
 
 export function getUnique(data: { [key: string]: FlightProps }[], property: string) {
@@ -95,25 +100,34 @@ export function formatTime(time: number) {
 
 export function getTimes(data: Flight[], pilot: string): Times {
 	// Find all flights where pilot was PIC
-	const picFlights = data.filter(a => a.gezagvoerder_naam === pilot)
+	const picFlights = data.filter((a) => a.gezagvoerder_naam === pilot);
 
 	// Find all flights where pilot was DBO
-	const dboFlights = data.filter(a => a.tweede_inzittende_naam === pilot && (a.is_training === true || a.is_fis === true))
+	const dboFlights = data.filter(
+		(a) => a.tweede_inzittende_naam === pilot && (a.is_training === true || a.is_fis === true)
+	);
 
 	// Find all flights where pilot was PAX
-	const paxFlights = data.filter(a => a.tweede_inzittende_naam === pilot && a.is_training === false && a.is_fis === false)
+	const paxFlights = data.filter(
+		(a) => a.tweede_inzittende_naam === pilot && a.is_training === false && a.is_fis === false
+	);
 
 	// Sum flight time by category
-	const totalTime = sumField(data, 'vluchtduur')
-	const picTime = sumField(picFlights, 'vluchtduur')
-	const dboTime = sumField(dboFlights, 'vluchtduur')
-	const paxTime = sumField(paxFlights, 'vluchtduur')
+	const totalTime = sumField(data, 'vluchtduur');
+	const picTime = sumField(picFlights, 'vluchtduur');
+	const dboTime = sumField(dboFlights, 'vluchtduur');
+	const paxTime = sumField(paxFlights, 'vluchtduur');
 
-	const totalTimeFormatted = formatTime(totalTime)
-	const picTimeFormatted = formatTime(picTime)
-	const dboTimeFormatted = formatTime(dboTime)
-	const paxTimeFormatted = formatTime(paxTime)
+	const totalTimeFormatted = formatTime(totalTime);
+	const picTimeFormatted = formatTime(picTime);
+	const dboTimeFormatted = formatTime(dboTime);
+	const paxTimeFormatted = formatTime(paxTime);
 
+	// Find all xcountry flights for pilot
+	const xcountryFlights = data.filter((a) => a.is_overland === true && a.vluchtduur > 33);
+
+	// Find all xcountry attempts flights for pilot
+	const xcountryattemptFlights = data.filter((a) => a.is_overland === true && a.vluchtduur < 33);
 
 	return {
 		flights: data,
@@ -131,78 +145,104 @@ export function getTimes(data: Flight[], pilot: string): Times {
 		totalTimeFormatted,
 		picTimeFormatted,
 		dboTimeFormatted,
+		paxTimeFormatted,
+		xcountryFlights,
+		xcountryFlightsCount: xcountryFlights.length,
+		xcountryattemptFlights,
+		xcountryattemptFlightsCount: xcountryattemptFlights.length
+	};
 }
 
 export function getStatistics(data: Flight[]): Stats {
 	// Find the most likely name of the pilot
 	const pilots: string[] = [
-		...data.map(a => typeof a.gezagvoerder_naam === "string" ? a.gezagvoerder_naam : ""),
-		...data.map(a => typeof a.tweede_inzittende_naam === "string" ? a.tweede_inzittende_naam : "")
-	]
+		...data.map((a) => (typeof a.gezagvoerder_naam === 'string' ? a.gezagvoerder_naam : '')),
+		...data.map((a) =>
+			typeof a.tweede_inzittende_naam === 'string' ? a.tweede_inzittende_naam : ''
+		)
+	];
 
-	const mostLikelyPilot = topKFrequent(pilots)
-	const pilot = mostLikelyPilot[0]
+	const mostLikelyPilot = topKFrequent(pilots);
+	const pilot = mostLikelyPilot[0];
 
-	const complete = getTimes(data, pilot)
-
-	// Find all xcountry flights for pilot
-	const xcountryFlights = data.filter(a => a.is_overland === true && a.vluchtduur > 33)
-
-	// Find all xcountry attempts flights for pilot
-	const xcountryattemptFlights = data.filter(a => a.is_overland === true && a.vluchtduur < 33)
+	const complete = getTimes(data, pilot);
 
 	// Find all flights where arrival airfield was buitenlanding
-	const outlandings = data.filter(a => a.aankomst_vliegveld === 'buitenlanding')
+	const outlandings = data.filter((a) => a.aankomst_vliegveld === 'buitenlanding');
 
 	// Find all exam flights
-	const examFlights = data.filter(a => a.is_examen)
+	const examFlights = data.filter((a) => a.is_examen);
 
 	// Get all flights after the last exam flights
-	const lastExamIndex = data.indexOf(examFlights[0])
-	const flightsAfterExam = data.slice(0, lastExamIndex)
+	const lastExamIndex = data.indexOf(examFlights[0]);
+	const flightsAfterExam = data.slice(0, lastExamIndex);
 
-	const timesAfterExam = getTimes(flightsAfterExam, pilot)
+	const timesAfterExam = getTimes(flightsAfterExam, pilot);
 
 	// Get flights by year
-	const years = getUnique(data, 'year')
-	const flightsByYear: Stats["flightsByYear"] = {}
+	const years = getUnique(data, 'year');
+	const flightsByYear: Stats['flightsByYear'] = {};
 	for (const year of years) {
 		if (typeof year === 'string' || typeof year === 'number') {
-			const flightsThisYear = data.filter(a => a.year === year)
-			flightsByYear[year] = getTimes(flightsThisYear, pilot)
+			const flightsThisYear = data.filter((a) => a.year === year);
+			flightsByYear[year] = getTimes(flightsThisYear, pilot);
 		}
 	}
 
-	// Get flights by year
-	let airplanes = getUnique(data, 'type')
-	airplanes = airplanes.sort()
-	const flightsByAirplane: Stats["flightsByAirplane"] = {}
+	// Get flights by type of airplane
+	let airplanes = getUnique(data, 'type');
+	airplanes = airplanes.sort();
+	const flightsByAirplane: Stats['flightsByAirplane'] = {};
 	for (const airplane of airplanes) {
 		if (typeof airplane === 'string') {
-			const flightsThisType = data.filter(a => a.type === airplane)
-			flightsByAirplane[airplane] = getTimes(flightsThisType, pilot)
+			const flightsThisType = data.filter((a) => a.type === airplane);
+			flightsByAirplane[airplane] = getTimes(flightsThisType, pilot);
 		}
 	}
 
-	let hasLicense = false
-	if (airplanes.includes("LS-8a")) hasLicense = true
-	if (airplanes.includes("LS-4b")) hasLicense = true
-	if (airplanes.includes("ASG-29")) hasLicense = true
+	// Get flights by launch method
+	let launchMethods = getUnique(data, 'start_methode');
+	launchMethods = launchMethods.sort();
+	const flightsByLaunchMethod: Stats['flightsByLaunchMethod'] = {};
+	for (const launchMethod of launchMethods) {
+		if (typeof launchMethod === 'string') {
+			const flightsThisType = data.filter((a) => a.start_methode === launchMethod);
+			flightsByLaunchMethod[launchMethod] = getTimes(flightsThisType, pilot);
+		}
+	}
+
+	// Get flights by departure airfield
+	let airfields = getUnique(data, 'vertrek_vliegveld');
+	airfields = airfields.sort();
+	const flightsByAirfield: Stats['flightsByAirfield'] = {};
+	for (const airfield of airfields) {
+		if (typeof airfield === 'string') {
+			const flightsThisAirfield = data.filter((a) => a.vertrek_vliegveld === airfield);
+			flightsByAirfield[airfield] = getTimes(flightsThisAirfield, pilot);
+		}
+	}
+
+	// Make some educated guesses on whether pilot has a license
+	let hasLicense = false;
+	if (airplanes.includes('LS-8a')) hasLicense = true;
+	if (airplanes.includes('LS-4b')) hasLicense = true;
+	if (airplanes.includes('ASG-29')) hasLicense = true;
 
 	return {
 		pilot,
 		...complete,
-		timesAfterExam,
-		xcountryFlights,
-		xcountryattemptFlights,
 		outlandings,
 		years,
 		flightsByYear,
+		flightsByAirfield,
 		airplanes,
 		flightsByAirplane,
+		launchMethods,
+		flightsByLaunchMethod,
 		hasLicense,
 		examFlights,
 		lastExamIndex,
 		flightsAfterExam,
-	}
+		timesAfterExam
+	};
 }
