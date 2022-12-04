@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getStatistics } from '../stats';
 	import { permissions } from '../permissions';
-	import type { Stats } from '../stats';
 
 	import SingleValueCard from './display/singlevaluecard.svelte';
 	import TimeDisplay from './display/timedisplay.svelte';
@@ -11,6 +10,7 @@
 	import Popup from './popup.svelte';
 
 	export let data: Flight[];
+	let statistics: Stats;
 
 	let inspectFlights: Flight[] = [];
 	$: {
@@ -227,7 +227,9 @@
 		</div>
 		<p class="text-white">
 			Onderstaande gegevens dienen als hulpmiddel. Raadpleeg zelf de bevoegdheid matrix:
-			<a href="https://acvz.zweef.app/documenten" target="_blank">Club / EASA bevoegdheid Matrix</a>
+			<a href="https://acvz.zweef.app/documenten" target="_blank" rel="noreferrer"
+				>Club / EASA bevoegdheid Matrix</a
+			>
 		</p>
 	</div>
 	<div class="flex flex-row flex-wrap gap-10">

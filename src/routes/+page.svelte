@@ -3,8 +3,6 @@
 	import StatsDisplay from '../lib/components/statsdisplay.svelte';
 	import { sanitizeData } from '$lib/stats';
 
-	// import { data } from '../lib/datastub';
-
 	import Papa from 'papaparse';
 
 	let contents: string;
@@ -21,7 +19,9 @@
 				skipEmptyLines: true
 			});
 			console.log(parsedCsv);
-			data = sanitizeData(parsedCsv.data);
+			if (parsedCsv !== null && parsedCsv.data) {
+				data = sanitizeData(parsedCsv.data);
+			}
 		} catch (error) {
 			error = error;
 		}
