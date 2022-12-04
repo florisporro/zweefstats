@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Simple static site built with SvelteKit to take a CSV file containing soaring pilots flight statistics (exported from a popular Dutch flight administration app: Zweef.app) and analyze it in various ways helpful to pilots.
+Simple static site built with SvelteKit to take a CSV file containing soaring pilots flight statistics (exported from a popular Dutch flight administration app: Zweef.app) and analyze it in various ways helpful to pilots. The permission checks are very specific to the requirements at my club, but could be easily adopted for other purposes.
 
 It's deployed here: [https://zweefstats.pages.dev/](https://zweefstats.pages.dev/)
 

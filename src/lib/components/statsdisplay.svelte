@@ -5,7 +5,6 @@
 	import SingleValueCard from './display/singlevaluecard.svelte';
 	import TimeDisplay from './display/timedisplay.svelte';
 	import KeyValue from './display/keyvalue.svelte';
-	import Fileselect from './fileselect.svelte';
 	import Flights from './display/Flights.svelte';
 	import Popup from './popup.svelte';
 
@@ -24,12 +23,6 @@
 
 	let hideUnCheckedData = true;
 
-	$: if (inspectFlights.length > 0) {
-		// flightInspectorOpen = true;
-		console.log({
-			flightInspectorOpen
-		});
-	}
 	$: statistics = getStatistics(data);
 	$: console.log(statistics);
 
@@ -254,9 +247,6 @@
 									</p>
 									<progress class="progress w-56" value={goalFactor} max="1" />
 								{/if}
-								<!-- <p>{value} / {requirement.goal}</p>
-							<p>{value}</p>
-							<p>{requirement.name}</p> -->
 							{:else if !hideUnCheckedData}
 								<p>❓ {requirement.name}</p>
 							{/if}
@@ -268,26 +258,6 @@
 	</div>
 </div>
 
-<!-- <h3>Dit zijn je achievements:</h3> -->
-
-<!-- <ul>
-		<li>3-uurs vlucht</li>
-		<li>5-uurs vlucht</li>
-		<li>6-uurs en 57 minuten vlucht</li>
-		<li>7-uurs vlucht</li>
-		<li>Houten Reet - 3-uur of langer in oud hout</li>
-		<li>Plastic Reet - 5-uur of langer in 21 of 23</li>
-		<li>Kunststof Reet - 8-uur of langer in een prestatiekist</li>
-		<li>St-akker - Buitenlanding binnen 60 minuten</li>
-		<li>Overland met een Beeke</li>
-		<li>Enkeltje Bel - Buitenlanding op Terlet</li>
-		<li>Drentse gastvrijheid - Buitenlanding op Salland</li>
-		<li>Net geen Duitsland - Buitenlanding op Venlo</li>
-		<li>Buitenlanding op Flevo</li>
-		<li>Rondje Rondweg - Gevlogen op Jena</li>
-		<li>Gevlogen op Stendal</li>
-		<li>Ervaren kampganger - Voor 2022 gevlogen op Stendal</li>
-	</ul> -->
 <style lang="postcss">
 	.segment {
 		@apply mb-12;

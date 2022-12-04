@@ -1,6 +1,3 @@
-import Statsdisplay from './components/statsdisplay.svelte';
-import type { Stats } from './stats';
-
 interface Requirement {
 	name: string;
 	goal?: number;
@@ -269,26 +266,3 @@ export const permissions: Permission[] = [
 		]
 	}
 ];
-
-// const permissions = {
-// 	ask23: (stats: Stats) => {
-// 		return 1 / 0.5;
-// 	},
-// 	ask23overland: (stats: Stats) => {},
-// 	ls8a: (stats: Stats) => {},
-// 	ls8overland: (stats: Stats) => {},
-// 	ls4b: (stats: Stats) => {},
-// 	ls4boverland: (stats: Stats) => {},
-// 	duodiscus: (stats: Stats) => {},
-// 	duodiscusoverland: (stats: Stats) => {},
-// 	ASG29: (stats: Stats) => {},
-// 	ASG29overland: (stats: Stats) => {}
-// };
-
-// export function getPermissions(stats: Stats) {
-// 	const permissionsToReturn: string[] = [];
-// 	for (const permission in permissions) {
-// 		if (permissions[permission](stats)) permissionsToReturn.push(permission);
-// 	}
-// 	return permissionsToReturn;
-// }

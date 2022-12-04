@@ -18,7 +18,7 @@
 				dynamicTyping: true,
 				skipEmptyLines: true
 			});
-			console.log(parsedCsv);
+
 			if (parsedCsv !== null && parsedCsv.data) {
 				data = sanitizeData(parsedCsv.data);
 			}

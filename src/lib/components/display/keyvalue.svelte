@@ -34,7 +34,7 @@
 				<tr>
 					<td>
 						<a
-							href=""
+							href={'#'}
 							on:click|preventDefault={() => {
 								handleInspect(value.flights);
 							}}
