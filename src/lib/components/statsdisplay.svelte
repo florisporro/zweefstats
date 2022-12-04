@@ -7,19 +7,52 @@
 	import TimeDisplay from './display/timedisplay.svelte';
 	import KeyValue from './display/keyvalue.svelte';
 	import Fileselect from './fileselect.svelte';
+	import Flights from './display/Flights.svelte';
+	import Popup from './popup.svelte';
 
 	export let data: Flight[];
 
-	export let statistics: Stats = [];
+	let inspectFlights: Flight[] = [];
+	$: {
+		inspectFlights;
+		if (inspectFlights.length > 0) {
+			flightInspectorOpen = true;
+		}
+	}
+
+	let flightInspectorOpen = false;
 
 	let hideUnCheckedData = true;
 
+	$: if (inspectFlights.length > 0) {
+		// flightInspectorOpen = true;
+		console.log({
+			flightInspectorOpen
+		});
+	}
 	$: statistics = getStatistics(data);
 	$: console.log(statistics);
+
+	function handleKeydown(event: any) {
+		if (event.key === 'Escape') {
+			flightInspectorOpen = false;
+		}
+	}
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <div>
 	<h2>Hallo, {statistics.pilot}</h2>
+
+	<Popup
+		bind:open={flightInspectorOpen}
+		on:close={() => {
+			flightInspectorOpen = false;
+		}}
+	>
+		<Flights flights={inspectFlights} />
+	</Popup>
 
 	<h3>Dit zijn jouw totalen:</h3>
 </div>
@@ -39,23 +72,56 @@
 		<SingleValueCard name="PIC tijd"><TimeDisplay value={statistics.picTime} /></SingleValueCard>
 	</div>
 	<div class="stats shadow">
-		<SingleValueCard name="Examen vluchten">{statistics.examFlights.length}</SingleValueCard>
+		<SingleValueCard name="Examen vluchten">
+			<a
+				href={'#'}
+				on:click|preventDefault={() => {
+					inspectFlights = statistics.examFlights;
+				}}>{statistics.examFlights.length}</a
+			>
+		</SingleValueCard>
 		<SingleValueCard name="Examen gehaald">{statistics.hasLicense ? '✅' : '❌'}</SingleValueCard>
 	</div>
 	<div class="stats shadow">
-		<SingleValueCard name="Totaal starts als PAX">{statistics.paxFlights.length}</SingleValueCard>
+		<SingleValueCard name="Totaal starts als PAX">
+			<a
+				href={'#'}
+				on:click|preventDefault={() => {
+					inspectFlights = statistics.paxFlights;
+				}}>{statistics.paxFlights.length}</a
+			>
+		</SingleValueCard>
 		<SingleValueCard name="PAX tijd"><TimeDisplay value={statistics.paxTime} /></SingleValueCard>
 	</div>
 	<div class="stats shadow">
-		<SingleValueCard name="Overland vluchten">{statistics.xcountryFlights.length}</SingleValueCard>
-		<SingleValueCard name="Overland pogingen"
-			>{statistics.xcountryattemptFlights.length}</SingleValueCard
-		>
+		<SingleValueCard name="Overland vluchten">
+			<a
+				href={'#'}
+				on:click|preventDefault={() => {
+					inspectFlights = statistics.xcountryFlights;
+				}}>{statistics.xcountryFlights.length}</a
+			>
+		</SingleValueCard>
+		<SingleValueCard name="Overland pogingen">
+			<a
+				href={'#'}
+				on:click|preventDefault={() => {
+					inspectFlights = statistics.xcountryattemptFlights;
+				}}>{statistics.xcountryattemptFlights.length}</a
+			>
+		</SingleValueCard>
 		{#if statistics.xcountryFlights.length > 0}
 			<SingleValueCard name="Laatste overland"
 				>{statistics.xcountryFlights[0].datum}</SingleValueCard
 			>
-			<SingleValueCard name="Buitenlandingen">{statistics.outlandings.length}</SingleValueCard>
+			<SingleValueCard name="Buitenlandingen">
+				<a
+					href={'#'}
+					on:click|preventDefault={() => {
+						inspectFlights = statistics.outlandings;
+					}}>{statistics.outlandings.length}</a
+				>
+			</SingleValueCard>
 		{/if}
 	</div>
 </div>
@@ -63,6 +129,7 @@
 	<h3>Dit zijn je starts per jaar:</h3>
 	<KeyValue
 		data={statistics.flightsByYear}
+		bind:inspectFlights
 		itemName="Jaar"
 		display={[
 			{ key: 'flightsCount', name: 'Vluchten' },
@@ -79,6 +146,7 @@
 	<h3>Dit zijn je starts per startmiddel:</h3>
 	<KeyValue
 		data={statistics.flightsByLaunchMethod}
+		bind:inspectFlights
 		itemName="Startmiddel"
 		display={[
 			{ key: 'flightsCount', name: 'Vluchten' },
@@ -93,6 +161,7 @@
 	<h3>Dit zijn je starts per vliegtuigtype:</h3>
 	<KeyValue
 		data={statistics.flightsByAirplane}
+		bind:inspectFlights
 		itemName="Type"
 		display={[
 			{ key: 'flightsCount', name: 'Vluchten' },
@@ -109,6 +178,7 @@
 	<h3>Dit zijn je starts per vliegveld:</h3>
 	<KeyValue
 		data={statistics.flightsByAirfield}
+		bind:inspectFlights
 		itemName="Vliegveld"
 		display={[
 			{ key: 'flightsCount', name: 'Vluchten' },
@@ -194,27 +264,6 @@
 			</div>
 		{/each}
 	</div>
-</div>
-
-<div class="segment">
-	<h3>Data explorer</h3>
-	<p>
-		Wil je weten of de filters kloppen / op basis van welke vluchten de berekening gedaan is? Door
-		hier een filter te selecteren krijg je te zien welke vluchten gebruikt zijn voor deze data, op
-		die manier kun je kijken of er fouten in de data zitten.
-	</p>
-	<select class="select select-info w-full max-w-xs">
-		<option disabled selected>Selecteer filter</option>
-		<option>Alle vluchten</option>
-		<option>PIC vluchten</option>
-		<option>DBO vluchten</option>
-		<option>PAX vluchten</option>
-		<option>Overland vluchten</option>
-		<option>Overland pogingen</option>
-		<option>Buitenlandingen</option>
-		<option>Examen vluchten</option>
-		<option>Vluchten na laatste examen</option>
-	</select>
 </div>
 
 <!-- <h3>Dit zijn je achievements:</h3> -->
