@@ -8,6 +8,11 @@
 	export let data: KeyValueData = {};
 	export let display: { key: string; name: string }[] = [];
 	export let itemName: string = 'Item';
+	export let inspectFlights: Flight[];
+
+	function handleInspect(flights: Flight[]) {
+		inspectFlights = flights;
+	}
 
 	let cols = 'grid-cols-4';
 
@@ -27,9 +32,18 @@
 		<tbody>
 			{#each Object.entries(data) as [key, value]}
 				<tr>
-					<td><pre>{key}</pre></td>
+					<td>
+						<a
+							href=""
+							on:click|preventDefault={() => {
+								handleInspect(value.flights);
+							}}
+						>
+							{key}
+						</a>
+					</td>
 					{#each display as key}
-						<td><pre>{value[key.key]}</pre></td>
+						<td>{value[key.key]}</td>
 					{/each}
 				</tr>
 			{/each}
