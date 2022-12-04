@@ -1,18 +1,12 @@
-# create-svelte
+# acvz-progressie-validator
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Introduction
 
-## Creating a project
+Simple static site built with SvelteKit to take a CSV file containing soaring pilots flight statistics (exported from a popular Dutch flight administration app: Zweef.app) and analyze it in various ways helpful to pilots.
 
-If you're seeing this, you've probably already done this step. Congrats!
+It's deployed here: [https://zweefstats.pages.dev/](https://zweefstats.pages.dev/)
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+Here is an anonymized example CSV that you can try it with.
 
 ## Developing
 
