@@ -7,8 +7,6 @@
 	}
 
 	export let open: boolean = false;
-
-	$: console.log({ open });
 </script>
 
 {#if open}

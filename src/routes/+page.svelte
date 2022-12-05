@@ -26,8 +26,7 @@
 			error = error;
 		}
 	}
-	$: console.log(data);
-	$: console.log(error);
+	$: if (error) console.error(error);
 </script>
 
 <section class="container mx-auto py-12">
