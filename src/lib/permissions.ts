@@ -247,7 +247,7 @@ export const permissions: Permission[] = [
 			{
 				name: 'Minimaal 10 overland vluchten',
 				goal: 10,
-				calculate: (stats) => stats.xcountryFlights.length
+				calculate: (stats) => stats.xcountryFlightsCount
 			},
 			{
 				name: 'Minimaal 2 buitenlandingen',

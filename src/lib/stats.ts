@@ -133,13 +133,13 @@ export function getTimes(data: Flight[], pilot: string): Times {
 
 	return {
 		flights: data,
-		flightsCount: data.length,
+		flightsCount: sumField(data, 'starts'),
 		picFlights,
-		picFlightsCount: picFlights.length,
+		picFlightsCount: sumField(picFlights, 'starts'),
 		dboFlights,
-		dboFlightsCount: dboFlights.length,
+		dboFlightsCount: sumField(dboFlights, 'starts'),
 		paxFlights,
-		paxFlightsCount: paxFlights.length,
+		paxFlightsCount: sumField(paxFlights, 'starts'),
 		totalTime,
 		picTime,
 		dboTime,
@@ -149,9 +149,9 @@ export function getTimes(data: Flight[], pilot: string): Times {
 		dboTimeFormatted,
 		paxTimeFormatted,
 		xcountryFlights,
-		xcountryFlightsCount: xcountryFlights.length,
+		xcountryFlightsCount: sumField(xcountryFlights, 'starts'),
 		xcountryattemptFlights,
-		xcountryattemptFlightsCount: xcountryattemptFlights.length
+		xcountryattemptFlightsCount: sumField(xcountryattemptFlights, 'starts')
 	};
 }
 

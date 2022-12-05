@@ -92,17 +92,17 @@
 
 <section class="statscontainer segment">
 	<div class="stats shadow">
-		<SingleValueCard name="Totaal starts">{data.length}</SingleValueCard>
+		<SingleValueCard name="Totaal starts">{statistics.flightsCount}</SingleValueCard>
 		<SingleValueCard name="Totaal tijd"
 			><TimeDisplay value={statistics.totalTime} /></SingleValueCard
 		>
 	</div>
 	<div class="stats shadow">
-		<SingleValueCard name="Totaal DBO starts">{statistics.dboFlights.length}</SingleValueCard>
+		<SingleValueCard name="Totaal DBO starts">{statistics.dboFlightsCount}</SingleValueCard>
 		<SingleValueCard name="DBO tijd"><TimeDisplay value={statistics.dboTime} /></SingleValueCard>
 	</div>
 	<div class="stats shadow">
-		<SingleValueCard name="Totaal PIC starts">{statistics.picFlights.length}</SingleValueCard>
+		<SingleValueCard name="Totaal PIC starts">{statistics.picFlightsCount}</SingleValueCard>
 		<SingleValueCard name="PIC tijd"><TimeDisplay value={statistics.picTime} /></SingleValueCard>
 	</div>
 	<div class="stats shadow">
@@ -111,7 +111,7 @@
 				href={'#'}
 				on:click|preventDefault={() => {
 					inspectFlights = statistics.paxFlights;
-				}}>{statistics.paxFlights.length}</a
+				}}>{statistics.paxFlightsCount}</a
 			>
 		</SingleValueCard>
 		<SingleValueCard name="PAX tijd"><TimeDisplay value={statistics.paxTime} /></SingleValueCard>
@@ -145,14 +145,14 @@
 <div class="divider">Overland vluchten</div>
 
 <section class="statscontainer segment">
-	{#if statistics.xcountryFlights.length > 0}
+	{#if statistics.xcountryFlightsCount > 0}
 		<div class="stats shadow">
 			<SingleValueCard name="Overland vluchten">
 				<a
 					href={'#'}
 					on:click|preventDefault={() => {
 						inspectFlights = statistics.xcountryFlights;
-					}}>{statistics.xcountryFlights.length}</a
+					}}>{statistics.xcountryFlightsCount}</a
 				>
 			</SingleValueCard>
 			<SingleValueCard name="Overland pogingen">
@@ -160,7 +160,7 @@
 					href={'#'}
 					on:click|preventDefault={() => {
 						inspectFlights = statistics.xcountryattemptFlights;
-					}}>{statistics.xcountryattemptFlights.length}</a
+					}}>{statistics.xcountryattemptFlightsCount}</a
 				>
 			</SingleValueCard>
 		</div>
@@ -277,14 +277,16 @@
 			<SingleValueCard name="Examen gehaald">{statistics.hasLicense ? '✅' : '❌'}</SingleValueCard>
 		</div>
 		<div class="stats shadow">
-			<SingleValueCard name="Totaal starts">{statistics.flightsAfterExam.length}</SingleValueCard>
+			<SingleValueCard name="Totaal starts"
+				>{statistics.timesAfterExam.flightsCount}</SingleValueCard
+			>
 			<SingleValueCard name="Totaal tijd"
 				><TimeDisplay value={statistics.timesAfterExam.totalTime} /></SingleValueCard
 			>
 		</div>
 		<div class="stats shadow">
 			<SingleValueCard name="Totaal DBO starts"
-				>{statistics.timesAfterExam.dboFlights.length}</SingleValueCard
+				>{statistics.timesAfterExam.dboFlightsCount}</SingleValueCard
 			>
 			<SingleValueCard name="DBO tijd"
 				><TimeDisplay value={statistics.timesAfterExam.dboTime} /></SingleValueCard
@@ -292,7 +294,7 @@
 		</div>
 		<div class="stats shadow">
 			<SingleValueCard name="Totaal PIC starts"
-				>{statistics.timesAfterExam.picFlights.length}</SingleValueCard
+				>{statistics.timesAfterExam.picFlightsCount}</SingleValueCard
 			>
 			<SingleValueCard name="PIC tijd"
 				><TimeDisplay value={statistics.timesAfterExam.picTime} /></SingleValueCard
