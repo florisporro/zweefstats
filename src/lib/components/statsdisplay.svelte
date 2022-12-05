@@ -38,6 +38,21 @@
 <div>
 	<h2>Hallo, {statistics.pilot}</h2>
 
+	<div class="alert shadow-lg w-2/3 mx-auto mb-12">
+		<div>
+			<span class="text-4xl p-6">ℹ️</span>
+
+			<span
+				>Dit tooltje geeft een analyse van de vliegdata op je Zweef App account. Daarmee kun je snel
+				en makkelijk antwoord krijgen op vragen als "hoeveel PIC starts heb ik op type X", "hoeveel
+				overland vluchten heb ik" en "in welk jaar heb ik het meest gevlogen". Maar zoals met iedere
+				data analyse is de analyse slechts zo goed als de data die erin gaat. Dus als je twijfelt
+				over de uitkomst, ga zelf je data na om fouten te vinden. Alle klikbare statistieken geven
+				een overzicht van de vluchten die gebruikt zijn voor de berekening.</span
+			>
+		</div>
+	</div>
+
 	<Popup
 		bind:open={flightInspectorOpen}
 		on:close={() => {
@@ -46,10 +61,9 @@
 	>
 		<Flights flights={inspectFlights} />
 	</Popup>
-
-	<h3>Dit zijn jouw totalen:</h3>
 </div>
-<div class="flex flex-row flex-wrap gap-5 segment">
+<div class="divider">Totalen</div>
+<div class="statscontainer segment">
 	<div class="stats shadow">
 		<SingleValueCard name="Totaal starts">{data.length}</SingleValueCard>
 		<SingleValueCard name="Totaal tijd"
@@ -63,17 +77,6 @@
 	<div class="stats shadow">
 		<SingleValueCard name="Totaal PIC starts">{statistics.picFlights.length}</SingleValueCard>
 		<SingleValueCard name="PIC tijd"><TimeDisplay value={statistics.picTime} /></SingleValueCard>
-	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Examen vluchten">
-			<a
-				href={'#'}
-				on:click|preventDefault={() => {
-					inspectFlights = statistics.examFlights;
-				}}>{statistics.examFlights.length}</a
-			>
-		</SingleValueCard>
-		<SingleValueCard name="Examen gehaald">{statistics.hasLicense ? '✅' : '❌'}</SingleValueCard>
 	</div>
 	<div class="stats shadow">
 		<SingleValueCard name="Totaal starts als PAX">
@@ -103,6 +106,8 @@
 				}}>{statistics.xcountryattemptFlights.length}</a
 			>
 		</SingleValueCard>
+	</div>
+	<div class="stats shadow">
 		{#if statistics.xcountryFlights.length > 0}
 			<SingleValueCard name="Laatste overland"
 				>{statistics.xcountryFlights[0].datum}</SingleValueCard
@@ -118,8 +123,8 @@
 		{/if}
 	</div>
 </div>
+<div class="divider">Jaren</div>
 <div class="segment">
-	<h3>Dit zijn je starts per jaar:</h3>
 	<KeyValue
 		data={statistics.flightsByYear}
 		bind:inspectFlights
@@ -135,8 +140,8 @@
 		]}
 	/>
 </div>
+<div class="divider">Startmiddelen</div>
 <div class="segment">
-	<h3>Dit zijn je starts per startmiddel:</h3>
 	<KeyValue
 		data={statistics.flightsByLaunchMethod}
 		bind:inspectFlights
@@ -150,8 +155,8 @@
 		]}
 	/>
 </div>
+<div class="divider">Vliegtuigtypes</div>
 <div class="segment">
-	<h3>Dit zijn je starts per vliegtuigtype:</h3>
 	<KeyValue
 		data={statistics.flightsByAirplane}
 		bind:inspectFlights
@@ -167,8 +172,8 @@
 		]}
 	/>
 </div>
+<div class="divider">Vliegvelden</div>
 <div class="segment">
-	<h3>Dit zijn je starts per vliegveld:</h3>
 	<KeyValue
 		data={statistics.flightsByAirfield}
 		bind:inspectFlights
@@ -182,52 +187,74 @@
 		]}
 	/>
 </div>
-<h3>Dit zijn je starts sinds je laatste examen:</h3>
-<div class="flex flex-row flex-wrap gap-5 segment">
-	<div class="stats shadow">
-		<SingleValueCard name="Totaal starts">{statistics.flightsAfterExam.length}</SingleValueCard>
-		<SingleValueCard name="Totaal tijd"
-			><TimeDisplay value={statistics.timesAfterExam.totalTime} /></SingleValueCard
-		>
+{#if statistics.examFlights.length > 0}
+	<div class="divider">Sinds laatste examenvlucht</div>
+	<div class="statscontainer segment">
+		<div class="stats shadow">
+			<SingleValueCard name="Examen vluchten">
+				<a
+					href={'#'}
+					on:click|preventDefault={() => {
+						inspectFlights = statistics.examFlights;
+					}}>{statistics.examFlights.length}</a
+				>
+			</SingleValueCard>
+			<SingleValueCard name="Examen gehaald">{statistics.hasLicense ? '✅' : '❌'}</SingleValueCard>
+		</div>
+		<div class="stats shadow">
+			<SingleValueCard name="Totaal starts">{statistics.flightsAfterExam.length}</SingleValueCard>
+			<SingleValueCard name="Totaal tijd"
+				><TimeDisplay value={statistics.timesAfterExam.totalTime} /></SingleValueCard
+			>
+		</div>
+		<div class="stats shadow">
+			<SingleValueCard name="Totaal DBO starts"
+				>{statistics.timesAfterExam.dboFlights.length}</SingleValueCard
+			>
+			<SingleValueCard name="DBO tijd"
+				><TimeDisplay value={statistics.timesAfterExam.dboTime} /></SingleValueCard
+			>
+		</div>
+		<div class="stats shadow">
+			<SingleValueCard name="Totaal PIC starts"
+				>{statistics.timesAfterExam.picFlights.length}</SingleValueCard
+			>
+			<SingleValueCard name="PIC tijd"
+				><TimeDisplay value={statistics.timesAfterExam.picTime} /></SingleValueCard
+			>
+		</div>
 	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Totaal DBO starts"
-			>{statistics.timesAfterExam.dboFlights.length}</SingleValueCard
-		>
-		<SingleValueCard name="DBO tijd"
-			><TimeDisplay value={statistics.timesAfterExam.dboTime} /></SingleValueCard
-		>
-	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Totaal PIC starts"
-			>{statistics.timesAfterExam.picFlights.length}</SingleValueCard
-		>
-		<SingleValueCard name="PIC tijd"
-			><TimeDisplay value={statistics.timesAfterExam.picTime} /></SingleValueCard
-		>
-	</div>
-</div>
-<h3>Dit is je progressie in de bevoegdheden matrix:</h3>
+{/if}
+<div class="divider">Bevoegdhedenmatrix</div>
 <div class="segment">
+	<div class="alert shadow-lg w-2/3 mx-auto mb-12">
+		<div>
+			<span class="text-4xl p-6">ℹ️</span>
+
+			<span
+				>Onderstaande gegevens dienen als hulpmiddel, de kans op fouten is aanwezig. Raadpleeg zelf
+				de bevoegdheid matrix, en reken na bij twijfel:
+				<a href="https://acvz.zweef.app/documenten" target="_blank" rel="noreferrer"
+					>Club / EASA bevoegdheid Matrix</a
+				></span
+			>
+		</div>
+	</div>
+
 	<div class="w-96 mx-auto mb-12">
 		<div class="form-control mb-12">
 			<label class="label cursor-pointer">
 				<span class="label-text text-white"
 					>Verberg vereisten die niet vastgesteld kunnen worden met data uit de Zweef app</span
 				>
-				<input type="checkbox" bind:checked={hideUnCheckedData} class="checkbox checkbox-lg" />
+				<input type="checkbox" bind:checked={hideUnCheckedData} class="toggle toggle-lg" />
 			</label>
 		</div>
-		<p class="text-white">
-			Onderstaande gegevens dienen als hulpmiddel. Raadpleeg zelf de bevoegdheid matrix:
-			<a href="https://acvz.zweef.app/documenten" target="_blank" rel="noreferrer"
-				>Club / EASA bevoegdheid Matrix</a
-			>
-		</p>
+		<p class="text-white" />
 	</div>
-	<div class="flex flex-row flex-wrap gap-10">
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
 		{#each permissions as permission}
-			<div class="card w-96 bg-base-100 shadow-xl">
+			<div class="card bg-base-100 shadow-xl">
 				<div class="card-body">
 					<h2 class="card-title text-black">{permission.name}</h2>
 					<div class="flex flex-col gap-2">
@@ -242,7 +269,7 @@
 									</p>
 								{:else}
 									<p>
-										🟠 {requirement.name}
+										🛑 {requirement.name}
 										{requirement.goal ? `(${Math.round(value)} / ${requirement.goal})` : ``}
 									</p>
 									<progress class="progress w-56" value={goalFactor} max="1" />
@@ -259,6 +286,9 @@
 </div>
 
 <style lang="postcss">
+	.statscontainer {
+		@apply flex flex-col w-full sm:w-3/4 lg:w-2/3 xl:w-1/2 gap-5 mx-auto;
+	}
 	.segment {
 		@apply mb-12;
 	}

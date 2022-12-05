@@ -10,4 +10,4 @@
 	}
 </script>
 
-{hours} uur en {minutes} minuten
+<span class="text-[0.8em]">{hours} uur en {minutes} minuten</span>
