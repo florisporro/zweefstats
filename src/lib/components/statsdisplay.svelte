@@ -35,7 +35,16 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div>
+<Popup
+	bind:open={flightInspectorOpen}
+	on:close={() => {
+		flightInspectorOpen = false;
+	}}
+>
+	<Flights flights={inspectFlights} />
+</Popup>
+
+<section>
 	<h2>Hallo, {statistics.pilot}</h2>
 
 	<div class="alert shadow-lg w-2/3 mx-auto mb-12">
@@ -52,18 +61,11 @@
 			>
 		</div>
 	</div>
+</section>
 
-	<Popup
-		bind:open={flightInspectorOpen}
-		on:close={() => {
-			flightInspectorOpen = false;
-		}}
-	>
-		<Flights flights={inspectFlights} />
-	</Popup>
-</div>
 <div class="divider">Totalen</div>
-<div class="statscontainer segment">
+
+<section class="statscontainer segment">
 	<div class="stats shadow">
 		<SingleValueCard name="Totaal starts">{data.length}</SingleValueCard>
 		<SingleValueCard name="Totaal tijd"
@@ -89,6 +91,35 @@
 		</SingleValueCard>
 		<SingleValueCard name="PAX tijd"><TimeDisplay value={statistics.paxTime} /></SingleValueCard>
 	</div>
+</section>
+
+<div class="divider">Gemiddelden</div>
+
+<section class="statscontainer segment">
+	<div class="stats shadow">
+		<SingleValueCard name="Starts per dag"
+			>{Math.round(statistics.averageFlightsPerDay * 100) / 100}</SingleValueCard
+		>
+		<SingleValueCard name="PIC starts per dag"
+			>{Math.round(statistics.averagePicFlightsPerDay * 100) / 100}</SingleValueCard
+		>
+		<SingleValueCard name="DBO starts per dag"
+			>{Math.round(statistics.averageDboFlightsPerDay * 100) / 100}</SingleValueCard
+		>
+	</div>
+	<div class="stats shadow">
+		<SingleValueCard name="Vliegtijd per dag (min)"
+			>{Math.round(statistics.averageMinutesPerDay * 100) / 100}</SingleValueCard
+		>
+		<SingleValueCard name="Vliegtijd per jaar"
+			><TimeDisplay value={Math.round(statistics.averageMinutesYear)} /></SingleValueCard
+		>
+	</div>
+</section>
+
+<div class="divider">Overland vluchten</div>
+
+<section class="statscontainer segment">
 	<div class="stats shadow">
 		<SingleValueCard name="Overland vluchten">
 			<a
@@ -122,9 +153,11 @@
 			</SingleValueCard>
 		{/if}
 	</div>
-</div>
+</section>
+
 <div class="divider">Jaren</div>
-<div class="segment">
+
+<section class="segment">
 	<KeyValue
 		data={statistics.flightsByYear}
 		bind:inspectFlights
@@ -139,9 +172,11 @@
 			{ key: 'xcountryattemptFlightsCount', name: 'Overland pogingen' }
 		]}
 	/>
-</div>
+</section>
+
 <div class="divider">Startmiddelen</div>
-<div class="segment">
+
+<section class="segment">
 	<KeyValue
 		data={statistics.flightsByLaunchMethod}
 		bind:inspectFlights
@@ -154,9 +189,9 @@
 			{ key: 'paxFlightsCount', name: 'PAX Vluchten' }
 		]}
 	/>
-</div>
+</section>
 <div class="divider">Vliegtuigtypes</div>
-<div class="segment">
+<section class="segment">
 	<KeyValue
 		data={statistics.flightsByAirplane}
 		bind:inspectFlights
@@ -171,9 +206,9 @@
 			{ key: 'xcountryattemptFlightsCount', name: 'Overland pogingen' }
 		]}
 	/>
-</div>
+</section>
 <div class="divider">Vliegvelden</div>
-<div class="segment">
+<section class="segment">
 	<KeyValue
 		data={statistics.flightsByAirfield}
 		bind:inspectFlights
@@ -186,10 +221,12 @@
 			{ key: 'paxFlightsCount', name: 'PAX Vluchten' }
 		]}
 	/>
-</div>
-{#if statistics.examFlights.length > 0}
-	<div class="divider">Sinds laatste examenvlucht</div>
-	<div class="statscontainer segment">
+</section>
+
+<div class="divider">Sinds laatste examenvlucht</div>
+
+<section class="statscontainer segment">
+	{#if statistics.examFlights.length > 0}
 		<div class="stats shadow">
 			<SingleValueCard name="Examen vluchten">
 				<a
@@ -223,10 +260,14 @@
 				><TimeDisplay value={statistics.timesAfterExam.picTime} /></SingleValueCard
 			>
 		</div>
-	</div>
-{/if}
+	{:else}
+		<p>Geen examenvluchten geregistreerd.</p>
+	{/if}
+</section>
+
 <div class="divider">Bevoegdhedenmatrix</div>
-<div class="segment">
+
+<section class="segment">
 	<div class="alert shadow-lg w-2/3 mx-auto mb-12">
 		<div>
 			<span class="text-4xl p-6">ℹ️</span>
@@ -283,7 +324,7 @@
 			</div>
 		{/each}
 	</div>
-</div>
+</section>
 
 <style lang="postcss">
 	.statscontainer {

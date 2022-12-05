@@ -153,6 +153,15 @@ export function getTimes(data: Flight[], pilot: string): Times {
 	};
 }
 
+function averageFlightProperty(property: string, timesObject: FlightsBy) {
+	// Create an array from the object with the property
+	const valuesArray = Object.values(timesObject).map((a) => a[property]) as number[];
+	// Remove zero values
+	const filteredArray = valuesArray.filter((a) => a > 0);
+	// Calculate average
+	return filteredArray.reduce((a, b) => a + b, 0) / filteredArray.length;
+}
+
 export function getStatistics(data: Flight[]): Stats {
 	// Find the most likely name of the pilot
 	const pilots: string[] = [
@@ -179,6 +188,21 @@ export function getStatistics(data: Flight[]): Stats {
 
 	const timesAfterExam = getTimes(flightsAfterExam, pilot);
 
+	// Get flights by date
+	const dates = getUnique(data, 'datum');
+	const flightsByDate: Stats['flightsByDate'] = {};
+	for (const date of dates) {
+		if (typeof date === 'string' || typeof date === 'number') {
+			const flightsThisDate = data.filter((a) => a.datum === date);
+			flightsByDate[date] = getTimes(flightsThisDate, pilot);
+		}
+	}
+
+	const averageFlightsPerDay = averageFlightProperty('flightsCount', flightsByDate);
+	const averagePicFlightsPerDay = averageFlightProperty('picFlightsCount', flightsByDate);
+	const averageDboFlightsPerDay = averageFlightProperty('dboFlightsCount', flightsByDate);
+	const averageMinutesPerDay = averageFlightProperty('totalTime', flightsByDate);
+
 	// Get flights by year
 	const years = getUnique(data, 'year');
 	const flightsByYear: Stats['flightsByYear'] = {};
@@ -188,6 +212,10 @@ export function getStatistics(data: Flight[]): Stats {
 			flightsByYear[year] = getTimes(flightsThisYear, pilot);
 		}
 	}
+
+	const averageStartsYear = averageFlightProperty('flightsCount', flightsByYear);
+	const averageMinutesYear = averageFlightProperty('totalTime', flightsByYear);
+	const averagePicStartsYear = averageFlightProperty('flightsCount', flightsByYear);
 
 	// Get flights by type of airplane
 	let airplanes = getUnique(data, 'type');
@@ -232,8 +260,17 @@ export function getStatistics(data: Flight[]): Stats {
 		pilot,
 		...complete,
 		outlandings,
+		dates,
+		flightsByDate,
+		averageFlightsPerDay,
+		averagePicFlightsPerDay,
+		averageDboFlightsPerDay,
+		averageMinutesPerDay,
 		years,
 		flightsByYear,
+		averageStartsYear,
+		averagePicStartsYear,
+		averageMinutesYear,
 		flightsByAirfield,
 		airplanes,
 		flightsByAirplane,

@@ -38,7 +38,12 @@ declare interface Flight {
 	notitie: string | null;
 }
 
+declare interface FlightsBy {
+	[key: string | number]: Times;
+}
+
 declare interface Times {
+	[key: string]: Flight[] | number | string;
 	flights: Flight[];
 	flightsCount: number;
 	picFlights: Flight[];
@@ -62,18 +67,26 @@ declare interface Times {
 }
 
 declare interface Stats extends Times {
+	[key: string]: Flight[] | FlightsBy | FlightProps[] | Times | number | string | boolean;
 	pilot: string;
 	timesAfterExam: Times;
 	xcountryFlights: Flight[];
 	xcountryattemptFlights: Flight[];
 	outlandings: Flight[];
+	dates: FlightProps[];
+	flightsByDate: FlightsBy;
+	averageFlightsPerDay: number;
+	averagePicFlightsPerDay: number;
+	averageDboFlightsPerDay: number;
+	averageMinutesPerDay: number;
+	averageMinutesYear: number;
 	years: FlightProps[];
-	flightsByYear: { [key: string | number]: Times };
-	flightsByAirfield: { [key: string | number]: Times };
+	flightsByYear: FlightsBy;
+	flightsByAirfield: FlightsBy;
 	airplanes: FlightProps[];
-	flightsByAirplane: { [key: string | number]: Times };
+	flightsByAirplane: FlightsBy;
 	launchMethods: FlightProps[];
-	flightsByLaunchMethod: { [key: string | number]: Times };
+	flightsByLaunchMethod: FlightsBy;
 	hasLicense: boolean;
 	examFlights: Flight[];
 	lastExamIndex: number;
