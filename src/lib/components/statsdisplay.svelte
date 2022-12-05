@@ -144,36 +144,37 @@
 <div class="divider">Overland vluchten</div>
 
 <section class="statscontainer segment">
-	<div class="stats shadow">
-		<SingleValueCard name="Overland vluchten">
-			<a
-				href={'#'}
-				on:click|preventDefault={() => {
-					inspectFlights = statistics.xcountryFlights;
-				}}>{statistics.xcountryFlights.length}</a
-			>
-		</SingleValueCard>
-		<SingleValueCard name="Overland pogingen">
-			<a
-				href={'#'}
-				on:click|preventDefault={() => {
-					inspectFlights = statistics.xcountryattemptFlights;
-				}}>{statistics.xcountryattemptFlights.length}</a
-			>
-		</SingleValueCard>
-	</div>
-	<div class="alert shadow-lg w-2/3 mx-auto">
-		<div>
-			<span class="text-4xl p-6">ℹ️</span>
-
-			<span
-				>Een buitenlanding is hier: een vlucht waar de plek van aankomst verschilt van de plek van
-				vertrek.
-			</span>
+	{#if statistics.xcountryFlights.length > 0}
+		<div class="stats shadow">
+			<SingleValueCard name="Overland vluchten">
+				<a
+					href={'#'}
+					on:click|preventDefault={() => {
+						inspectFlights = statistics.xcountryFlights;
+					}}>{statistics.xcountryFlights.length}</a
+				>
+			</SingleValueCard>
+			<SingleValueCard name="Overland pogingen">
+				<a
+					href={'#'}
+					on:click|preventDefault={() => {
+						inspectFlights = statistics.xcountryattemptFlights;
+					}}>{statistics.xcountryattemptFlights.length}</a
+				>
+			</SingleValueCard>
 		</div>
-	</div>
-	<div class="stats shadow">
-		{#if statistics.xcountryFlights.length > 0}
+
+		<div class="alert shadow-lg w-2/3 mx-auto">
+			<div>
+				<span class="text-4xl p-6">ℹ️</span>
+
+				<span
+					>Een buitenlanding is hier: een vlucht waar de plek van aankomst verschilt van de plek van
+					vertrek.
+				</span>
+			</div>
+		</div>
+		<div class="stats shadow">
 			<SingleValueCard name="Laatste overland"
 				>{statistics.xcountryFlights[0].datum}</SingleValueCard
 			>
@@ -185,8 +186,10 @@
 					}}>{statistics.outlandings.length}</a
 				>
 			</SingleValueCard>
-		{/if}
-	</div>
+		</div>
+	{:else}
+		<p>Geen overland vluchten geregistreerd.</p>
+	{/if}
 </section>
 
 <div class="divider">Jaren</div>
