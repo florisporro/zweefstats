@@ -8,7 +8,7 @@ The permission checks I've programmed are very specific to the requirements at m
 
 It's deployed here: [https://zweefstats.pages.dev/](https://zweefstats.pages.dev/)
 
-[Here is an anonymized example CSV](https://raw.githubusercontent.com/florisporro/acvz-progressie-validator/master/example.csv) that you can try it with if you don't have access to such data.
+[Here is an anonymized example CSV](https://raw.githubusercontent.com/florisporro/zweefstats/master/example.csv) that you can try it with if you don't have access to such data.
 
 ## Developing
 
