@@ -34,13 +34,13 @@
 	<div class="text-sm text-center mb-12">
 		<span
 			><a href="https://github.com/florisporro/zweefstats" target="_blank" rel="noreferrer"
-				>Broncode op GitHub</a
+				>GitHub</a
 			></span
 		>
 		-
 		<span
 			><a href="https://github.com/florisporro/zweefstats/issues" target="_blank" rel="noreferrer"
-				>Fout rapporteren</a
+				>Issues</a
 			></span
 		>
 	</div>
