@@ -31,23 +31,40 @@
 </script>
 
 <section class="container mx-auto py-12">
-	<h1>ACVZ Checkotron 3000</h1>
-	{#if data}
-		<StatsDisplay {data} />
-		<button
-			on:click={() => {
-				data = null;
-				parsedCsv = null;
-				contents = '';
-			}}>Reset</button
+	<h1>Zweefstats</h1>
+	<div class="text-sm text-center mb-12">
+		<span
+			><a href="https://github.com/florisporro/zweefstats" target="_blank" rel="noreferrer"
+				>Broncode op GitHub</a
+			></span
 		>
+		-
+		<span
+			><a href="https://github.com/florisporro/zweefstats/issues" target="_blank" rel="noreferrer"
+				>Fout rapporteren</a
+			></span
+		>
+	</div>
+	{#if data}
+		<div class="text-sm text-center mb-12">
+			<button
+				class="btn btn-wide"
+				on:click={() => {
+					data = null;
+					parsedCsv = null;
+					contents = '';
+				}}>Terug naar begin</button
+			>
+		</div>
+		<StatsDisplay {data} />
 	{:else}
 		<ul>
 			<li>✅ Check je bevoegdheden progressie volgens ACvZ reglementen</li>
 			<li>✅ Krijg interessante statistieken over je vlieghistorie</li>
-			<li>✅ Volledig lokaal - je data wordt niet verzonden</li>
-			<li>❌ Kan niet alle soorten bevoegdheden bijhouden</li>
-			<li>❌ Werkt niet voor instructeurs (sorry instructeurs)</li>
+			<li>✅ Volledig lokaal - data wordt niet verzonden</li>
+			<li>✅ Klik op datapunten om te zien welke vluchten er gebruikt zijn</li>
+			<li>❌ Werkt niet goed op telefoons</li>
+			<li>❌ Werkt om onbekende reden niet voor instructeurs (sorry instructeurs)</li>
 		</ul>
 
 		<div class="flex flex-row flex-1 my-8 justify-center">
@@ -75,6 +92,6 @@
 	}
 
 	ul {
-		@apply text-2xl text-center text-white leading-10;
+		@apply text-center text-white text-lg leading-8 lg:text-xl lg:leading-9 xl:text-2xl xl:leading-10;
 	}
 </style>
