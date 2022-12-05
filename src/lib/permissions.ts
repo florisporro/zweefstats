@@ -24,8 +24,8 @@ const commonRequirements = {
 		name: 'Minimaal 15 starts op type voordat de LS-4 en LS-8 door elkaar gevlogen mogen worden',
 		goal: 15,
 		calculate: (stats: Stats) => {
-			const ls4flights = totalStartCount(stats, ['LS-4b']);
-			const ls8flights = totalStartCount(stats, ['LS-8a']);
+			const ls4flights = totalStartCount(stats, commonTypes.ls4);
+			const ls8flights = totalStartCount(stats, commonTypes.ls8);
 
 			if (ls4flights > 0 && ls4flights < 15) {
 				return ls4flights;
@@ -33,7 +33,7 @@ const commonRequirements = {
 			if (ls8flights > 0 && ls8flights < 15) {
 				return ls8flights;
 			}
-			return 1;
+			return Math.min(ls4flights, ls8flights);
 		}
 	}
 };
