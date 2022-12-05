@@ -44,6 +44,23 @@
 			></span
 		>
 	</div>
+	<div class="sm:hidden alert alert-error shadow-lg mb-12">
+		<div>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="stroke-current flex-shrink-0 h-6 w-6"
+				fill="none"
+				viewBox="0 0 24 24"
+				><path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+				/></svg
+			>
+			<span>Hoi! Sorry, dit tooltje werkt bijzonder slecht op telefoons.</span>
+		</div>
+	</div>
 	{#if data}
 		<div class="text-sm text-center mb-12">
 			<button
@@ -62,8 +79,7 @@
 			<li>✅ Krijg interessante statistieken over je vlieghistorie</li>
 			<li>✅ Volledig lokaal - data wordt niet verzonden</li>
 			<li>✅ Klik op datapunten om te zien welke vluchten er gebruikt zijn</li>
-			<li>❌ Werkt niet goed op telefoons</li>
-			<li>❌ Werkt om onbekende reden niet voor instructeurs (sorry instructeurs)</li>
+			<li>📵 Werkt niet goed op telefoons</li>
 		</ul>
 
 		<div class="flex flex-row flex-1 my-8 justify-center">

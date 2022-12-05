@@ -61,9 +61,10 @@
 					/></svg
 				>
 				<span
-					>Sorry! Deze CSV is niet leesbaar. Om onbekende reden exporteert de Zweef App bij sommige
-					mensen een niet-leesbaar CSV bestand. Het lijkt erop dat dit alleen bij instructeurs het
-					geval is. Er is op dit moment nog geen oplossing beschikbaar.</span
+					>Sorry! Deze CSV is niet leesbaar. Om onbekende reden werkt de CSV export functie niet
+					goed in sommige browsers. Probeer het opnieuw via een andere browser of apparaat. Als je
+					het via een telefoon probeerde, kan dit mogelijk de oorzaak zijn. Probeer het dan via een
+					PC.</span
 				>
 			</div>
 		</div>
