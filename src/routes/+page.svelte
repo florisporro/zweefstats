@@ -77,7 +77,9 @@
 				<img src="/step3.png" alt="Step 3" />
 			</div>
 		</div>
-		<FileSelect bind:contents />
+		<div class="mx-auto text-center">
+			<FileSelect bind:contents />
+		</div>
 	{/if}
 </section>
 
