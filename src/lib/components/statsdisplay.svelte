@@ -44,23 +44,47 @@
 	<Flights flights={inspectFlights} />
 </Popup>
 
-<section>
-	<h2>Hallo, {statistics.pilot}</h2>
-
-	<div class="alert shadow-lg w-2/3 mx-auto mb-12">
-		<div>
-			<span class="text-4xl p-6">ℹ️</span>
-
-			<span
-				>Dit tooltje geeft een analyse van de vliegdata op je Zweef App account. Daarmee kun je snel
-				en makkelijk antwoord krijgen op vragen als "hoeveel PIC starts heb ik op type X", "hoeveel
-				overland vluchten heb ik" en "in welk jaar heb ik het meest gevlogen". Maar zoals met iedere
-				data analyse is de analyse slechts zo goed als de data die erin gaat. Dus als je twijfelt
-				over de uitkomst, ga zelf je data na om fouten te vinden. Alle klikbare statistieken geven
-				een overzicht van de vluchten die gebruikt zijn voor de berekening.</span
-			>
+<section class="mb-12">
+	{#if !statistics.pilot}
+		<div class="alert alert-error shadow-lg">
+			<div>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="stroke-current flex-shrink-0 h-6 w-6"
+					fill="none"
+					viewBox="0 0 24 24"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+					/></svg
+				>
+				<span
+					>Sorry! Deze CSV is niet leesbaar. Om onbekende reden exporteert de Zweef App bij sommige
+					mensen een niet-leesbaar CSV bestand. Het lijkt erop dat dit alleen bij instructeurs het
+					geval is. Er is op dit moment nog geen oplossing beschikbaar.</span
+				>
+			</div>
 		</div>
-	</div>
+	{:else}
+		<h2>Hallo, {statistics.pilot}</h2>
+
+		<div class="alert shadow-lg w-2/3 mx-auto">
+			<div>
+				<span class="text-4xl p-6">ℹ️</span>
+
+				<span
+					>Dit tooltje geeft een analyse van de vliegdata op je Zweef App account. Daarmee kun je
+					snel en makkelijk antwoord krijgen op vragen als "hoeveel PIC starts heb ik op type X",
+					"hoeveel overland vluchten heb ik" en "in welk jaar heb ik het meest gevlogen". Maar zoals
+					met iedere data analyse is de analyse slechts zo goed als de data die erin gaat. Dus als
+					je twijfelt over de uitkomst, ga zelf je data na om fouten te vinden. Alle klikbare
+					statistieken geven een overzicht van de vluchten die gebruikt zijn voor de berekening.</span
+				>
+			</div>
+		</div>
+	{/if}
 </section>
 
 <div class="divider">Totalen</div>
@@ -137,6 +161,16 @@
 				}}>{statistics.xcountryattemptFlights.length}</a
 			>
 		</SingleValueCard>
+	</div>
+	<div class="alert shadow-lg w-2/3 mx-auto">
+		<div>
+			<span class="text-4xl p-6">ℹ️</span>
+
+			<span
+				>Een buitenlanding is hier: een vlucht waar de plek van aankomst verschilt van de plek van
+				vertrek.
+			</span>
+		</div>
 	</div>
 	<div class="stats shadow">
 		{#if statistics.xcountryFlights.length > 0}
