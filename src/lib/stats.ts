@@ -124,10 +124,12 @@ export function getTimes(data: Flight[], pilot: string): Times {
 	const paxTimeFormatted = formatTime(paxTime);
 
 	// Find all xcountry flights for pilot
-	const xcountryFlights = data.filter((a) => a.is_overland === true && a.vluchtduur > 33);
+	const xcountryFlights = picFlights.filter((a) => a.is_overland === true && a.vluchtduur > 33);
 
 	// Find all xcountry attempts flights for pilot
-	const xcountryattemptFlights = data.filter((a) => a.is_overland === true && a.vluchtduur < 33);
+	const xcountryattemptFlights = picFlights.filter(
+		(a) => a.is_overland === true && a.vluchtduur < 33
+	);
 
 	return {
 		flights: data,
@@ -177,7 +179,7 @@ export function getStatistics(data: Flight[]): Stats {
 	const complete = getTimes(data, pilot);
 
 	// Find all flights where arrival airfield was buitenlanding
-	const outlandings = data.filter((a) => a.aankomst_vliegveld === 'buitenlanding');
+	const outlandings = data.filter((a) => a.aankomst_vliegveld !== a.vertrek_vliegveld);
 
 	// Find all exam flights
 	const examFlights = data.filter((a) => a.is_examen);
