@@ -227,7 +227,7 @@ export function getStatistics(data: Flight[]): Stats {
 
 	const averageStartsYear = averageFlightProperty('flightsCount', flightsByYear);
 	const averageMinutesYear = averageFlightProperty('totalTime', flightsByYear);
-	const averagePicStartsYear = averageFlightProperty('flightsCount', flightsByYear);
+	const averagePicStartsYear = averageFlightProperty('picFlightsCount', flightsByYear);
 
 	// Get flights by type of airplane
 	let airplanes = getUnique(data, 'type');
