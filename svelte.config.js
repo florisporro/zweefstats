@@ -10,12 +10,8 @@ const config = {
 			postcss: true,
 		}),
 	],
-
 	kit: {
-		adapter: adapter(),
-		prerender: {
-			enabled: false
-		}
+		adapter: adapter()
 	}
 };
 
