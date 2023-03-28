@@ -16,6 +16,8 @@
 				>Issues</a
 			></span
 		>
+		-
+		<span><a href="/changelog">Changelog</a></span>
 	</div>
 	<div class="sm:hidden alert alert-error shadow-lg mb-12">
 		<div>
