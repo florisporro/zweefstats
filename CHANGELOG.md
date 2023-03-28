@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/florisporro/zweefstats/compare/v1.0.0...v1.1.0) (2023-03-28)
+
+
+### Features
+
+* Optie om vluchtgegevens te delen voor statistische analyse ([065ba7e](https://github.com/florisporro/zweefstats/commit/065ba7e7982a50170383030a8127b35e6bfd1503))
+* Weergave van nationale statistieken op de homepage ([734876e](https://github.com/florisporro/zweefstats/commit/734876e2dbd03c212fa1f6a755a1f247e9953390))
+
 ## 1.0.0 (2023-03-28)
 
 
