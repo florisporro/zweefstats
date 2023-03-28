@@ -1,12 +1,20 @@
+function possiblyStringRow(value: string | boolean) {
+	if (typeof value === 'string') {
+		return value === 'True' ? true : false;
+	} else {
+		return value;
+	}
+}
+
 export function sanitizeData(results: Flight[]): Flight[] {
 	const data: Flight[] = [];
 	results.forEach((row: Flight) => {
-		row.is_prive === 'True' ? (row.is_prive = true) : (row.is_prive = false);
-		row.is_fis === 'True' ? (row.is_fis = true) : (row.is_fis = false);
-		row.is_training === 'True' ? (row.is_training = true) : (row.is_training = false);
-		row.is_examen === 'True' ? (row.is_examen = true) : (row.is_examen = false);
-		row.is_profcheck === 'True' ? (row.is_profcheck = true) : (row.is_profcheck = false);
-		row.is_overland === 'True' ? (row.is_overland = true) : (row.is_overland = false);
+		row.is_prive = possiblyStringRow(row.is_prive);
+		row.is_fis = possiblyStringRow(row.is_fis);
+		row.is_training = possiblyStringRow(row.is_training);
+		row.is_examen = possiblyStringRow(row.is_examen);
+		row.is_profcheck = possiblyStringRow(row.is_profcheck);
+		row.is_overland = possiblyStringRow(row.is_overland);
 		data.push(row);
 	});
 	return data;
