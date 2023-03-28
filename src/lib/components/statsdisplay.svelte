@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getStatistics } from '../stats';
-	import { permissions } from '../permissions';
+	import Clubs from '../permissions';
 
 	import SingleValueCard from './display/singlevaluecard.svelte';
 	import TimeDisplay from './display/timedisplay.svelte';
@@ -22,6 +22,12 @@
 	let flightInspectorOpen = false;
 
 	let hideUnCheckedData = true;
+
+	const sessionStorageValue = sessionStorage.getItem('zweefapp');
+	const parsedsessionStorage = sessionStorageValue ? JSON.parse(sessionStorageValue) : null;
+	let selectedClub = parsedsessionStorage ? parsedsessionStorage.club.toLowerCase() : '';
+
+	$: console.log({ selectedClub });
 
 	$: statistics = getStatistics(data);
 	$: console.log(statistics);
@@ -69,19 +75,17 @@
 			</div>
 		</div>
 	{:else}
-		<h2>Hallo, {statistics.pilot}</h2>
+		<h2>Statistieken voor {statistics.pilot}</h2>
 
 		<div class="alert shadow-lg w-2/3 mx-auto">
 			<div>
 				<span class="text-4xl p-6">ℹ️</span>
 
 				<span
-					>Dit tooltje geeft een analyse van de vliegdata op je Zweef App account. Daarmee kun je
-					snel en makkelijk antwoord krijgen op vragen als "hoeveel PIC starts heb ik op type X",
-					"hoeveel overland vluchten heb ik" en "in welk jaar heb ik het meest gevlogen". Maar zoals
-					met iedere data analyse is de analyse slechts zo goed als de data die erin gaat. Dus als
-					je twijfelt over de uitkomst, ga zelf je data na om fouten te vinden. Alle klikbare
-					statistieken geven een overzicht van de vluchten die gebruikt zijn voor de berekening.</span
+					>Zoals met iedere data analyse is de analyse slechts zo goed als de data die erin gaat.
+					Dus als je twijfelt over de uitkomst, ga zelf je data na om fouten te vinden. Alle
+					klikbare statistieken geven een overzicht van de vluchten die gebruikt zijn voor de
+					berekening.</span
 				>
 			</div>
 		</div>
@@ -171,7 +175,7 @@
 
 				<span
 					>Een buitenlanding is hier: een vlucht waar de plek van aankomst verschilt van de plek van
-					vertrek.
+					vertrek. Als deze data niet klopt, kun je die wijzigen in de Zweef App.
 				</span>
 			</div>
 		</div>
@@ -314,55 +318,68 @@
 
 			<span
 				>Onderstaande gegevens dienen als hulpmiddel, de kans op fouten is aanwezig. Raadpleeg zelf
-				de bevoegdheid matrix, en reken na bij twijfel:
-				<a href="https://acvz.zweef.app/documenten" target="_blank" rel="noreferrer"
-					>Club / EASA bevoegdheid Matrix</a
-				></span
-			>
+				de reglementen van je club.
+			</span>
 		</div>
 	</div>
 
-	<div class="w-96 mx-auto mb-12">
-		<div class="form-control mb-12">
-			<label class="label cursor-pointer">
-				<span class="label-text text-white"
+	<div class="w-full md:w-1/3 flex flex-row mx-auto mb-12">
+		<div class="form-control">
+			<label class="label cursor-pointer" for="verbergVereisten">
+				<span class="label-text"
 					>Verberg vereisten die niet vastgesteld kunnen worden met data uit de Zweef app</span
 				>
-				<input type="checkbox" bind:checked={hideUnCheckedData} class="toggle toggle-lg" />
 			</label>
+			<input
+				type="checkbox"
+				name="verbergVereisten"
+				bind:checked={hideUnCheckedData}
+				class="toggle toggle-lg"
+			/>
 		</div>
-		<p class="text-white" />
+		<div class="form-control">
+			<label for="clubSelector" class="label">
+				<span class="label-text">Selecteer je club om permissies te tonen</span>
+			</label>
+			<select class="select w-full max-w-xs" name="clubSelector" bind:value={selectedClub}>
+				{#each Object.keys(Clubs) as club}
+					<option value={club}>{club}</option>
+				{/each}
+			</select>
+		</div>
 	</div>
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-		{#each permissions as permission}
-			<div class="card bg-base-100 shadow-xl">
-				<div class="card-body">
-					<h2 class="card-title text-black">{permission.name}</h2>
-					<div class="flex flex-col gap-2">
-						{#each permission.requirements as requirement}
-							{#if requirement.calculate}
-								{@const value = requirement.calculate(statistics)}
-								{@const goalFactor = requirement.goal ? value / requirement.goal : value}
-								{#if goalFactor >= 1}
-									<p>
-										✅ {requirement.name}
-										{requirement.goal ? `(${Math.round(value)} / ${requirement.goal})` : ``}
-									</p>
-								{:else}
-									<p>
-										🛑 {requirement.name}
-										{requirement.goal ? `(${Math.round(value)} / ${requirement.goal})` : ``}
-									</p>
-									<progress class="progress w-56" value={goalFactor} max="1" />
+		{#if Clubs[selectedClub] !== undefined}
+			{#each Clubs[selectedClub] as permission}
+				<div class="card bg-base-100 shadow-xl">
+					<div class="card-body">
+						<h2 class="card-title text-black">{permission.name}</h2>
+						<div class="flex flex-col gap-2">
+							{#each permission.requirements as requirement}
+								{#if requirement.calculate}
+									{@const value = requirement.calculate(statistics)}
+									{@const goalFactor = requirement.goal ? value / requirement.goal : value}
+									{#if goalFactor >= 1}
+										<p>
+											✅ {requirement.name}
+											{requirement.goal ? `(${Math.round(value)} / ${requirement.goal})` : ``}
+										</p>
+									{:else}
+										<p>
+											🛑 {requirement.name}
+											{requirement.goal ? `(${Math.round(value)} / ${requirement.goal})` : ``}
+										</p>
+										<progress class="progress w-56" value={goalFactor} max="1" />
+									{/if}
+								{:else if !hideUnCheckedData}
+									<p>❓ {requirement.name}</p>
 								{/if}
-							{:else if !hideUnCheckedData}
-								<p>❓ {requirement.name}</p>
-							{/if}
-						{/each}
+							{/each}
+						</div>
 					</div>
 				</div>
-			</div>
-		{/each}
+			{/each}
+		{/if}
 	</div>
 </section>
 
