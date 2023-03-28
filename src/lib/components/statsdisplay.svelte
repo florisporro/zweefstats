@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getStatistics } from '../stats';
+	import { saveStats } from '../saveload';
 	import Clubs from '../permissions';
 
 	import SingleValueCard from './display/singlevaluecard.svelte';
@@ -20,6 +21,9 @@
 	}
 
 	let flightInspectorOpen = false;
+	let shareStatsClosed = false;
+	let shareStatsSending = false;
+	let shareStatsSent = false;
 
 	let hideUnCheckedData = true;
 
@@ -36,6 +40,14 @@
 		if (event.key === 'Escape') {
 			flightInspectorOpen = false;
 		}
+	}
+
+	async function shareStats() {
+		shareStatsSending = true;
+		const response = await saveStats(statistics, selectedClub);
+		console.log(response);
+		shareStatsSending = false;
+		shareStatsSent = true;
 	}
 </script>
 
@@ -76,6 +88,45 @@
 		</div>
 	{:else}
 		<h2>Statistieken voor {statistics.pilot}</h2>
+
+		{#if !shareStatsClosed}
+			<div class="alert alert-warning shadow-lg mb-5 w-2/3 mx-auto">
+				{#if shareStatsSending}
+					<div>
+						<span class="text-4xl p-6">📡</span>
+						<span>Verzenden...</span>
+					</div>
+				{/if}
+				{#if shareStatsSent}
+					<div>
+						<span class="text-4xl p-6">✅</span>
+						<span
+							>Dank voor het delen van je gegevens! Ze worden verwerkt en binnen een uur aan de
+							statistieken op de homepage toegevoegd. Eerder ingestuurde gegevens worden automatisch
+							vervangen.</span
+						>
+					</div>
+				{/if}
+				{#if !shareStatsSending && !shareStatsSent}
+					<div>
+						<span class="text-4xl p-6">📡</span>
+						<span
+							>Wil je je gegevens delen voor de verzameling van statistieken over zweefvliegend
+							Nederland?</span
+						>
+					</div>
+					<div class="flex-none">
+						<button
+							class="btn btn-sm btn-ghost"
+							on:click={() => {
+								shareStatsClosed = true;
+							}}>Niet delen</button
+						>
+						<button class="btn btn-sm btn-primary" on:click={shareStats}>Gegevens delen</button>
+					</div>
+				{/if}
+			</div>
+		{/if}
 
 		<div class="alert shadow-lg w-2/3 mx-auto">
 			<div>
@@ -323,10 +374,17 @@
 		</div>
 	</div>
 
+	<p class="mb-4">
+		De bevoegdheden van je club hier zichtbaar? <a
+			href="https://github.com/florisporro/zweefstats/issues"
+			target="_blank">Open een issue op Github</a
+		>.
+	</p>
+
 	<div class="w-full md:w-1/3 flex flex-row mx-auto mb-12">
 		<div class="form-control">
 			<label class="label cursor-pointer" for="verbergVereisten">
-				<span class="label-text"
+				<span class="label-text "
 					>Verberg vereisten die niet vastgesteld kunnen worden met data uit de Zweef app</span
 				>
 			</label>

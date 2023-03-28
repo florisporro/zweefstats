@@ -163,7 +163,7 @@ export function getTimes(data: Flight[], pilot: string): Times {
 	};
 }
 
-function averageFlightProperty(property: string, timesObject: FlightsBy) {
+function averageFlightProperty(property: string, timesObject: FlightsBy): number {
 	// Create an array from the object with the property
 	const valuesArray = Object.values(timesObject).map((a) => a[property]) as number[];
 	// Remove zero values
@@ -183,6 +183,8 @@ export function getStatistics(data: Flight[]): Stats {
 
 	const mostLikelyPilot = topKFrequent(pilots);
 	const pilot = mostLikelyPilot[0];
+
+	const pilotId = data.find((a) => a.gezagvoerder_naam === pilot)?.gezagvoerder_id;
 
 	const complete = getTimes(data, pilot);
 
@@ -268,6 +270,7 @@ export function getStatistics(data: Flight[]): Stats {
 
 	return {
 		pilot,
+		pilotId,
 		...complete,
 		outlandings,
 		dates,

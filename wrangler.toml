@@ -1,0 +1,10 @@
+name = "zweefstats"
+command = "node build.js"
+main = "dist/index.mjs"
+compatibility_date = "2023-02-25"
+kv_namespaces = [
+    { binding = "zweefstats", id = "baf5b35c48dd45f0aff80cdb429c12e3", preview_id = "fc78c0562dd4460c9d73eefdcc429b48" }
+]
+
+[triggers]
+crons = ["0 */1 * * *"]
