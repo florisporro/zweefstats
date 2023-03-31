@@ -34,61 +34,64 @@
 	<a href="/load/csv" class="btn btn-outline">Data inladen uit CSV</a>
 </div>
 
-<h3>Nationale Statistieken</h3>
-<p class="text-white prose mx-auto">
-	Na het inladen van je eigen statistieken krijg je de optie om je vluchtinformatie te delen.
-	Daarmee kunnen we de onderstaande statistieken berekenen:
-</p>
-<p class="text-white prose mx-auto mb-12 text-sm">
-	(de herberekening van de statistieken gebeurt eenmaal per uur, op het hele uur)
-</p>
+{#if data.stats}
+	<h3>Nationale Statistieken</h3>
+	<p class="text-white prose mx-auto">
+		Na het inladen van je eigen statistieken krijg je de optie om je vluchtinformatie te delen.
+		Daarmee kunnen we de onderstaande statistieken berekenen:
+	</p>
+	<p class="text-white prose mx-auto mb-12 text-sm">
+		(de herberekening van de statistieken gebeurt eenmaal per uur, op het hele uur)
+	</p>
 
-<section class="statscontainer segment">
-	<div class="stats shadow">
-		<SingleValueCard name="Piloten">{data.stats.pilots}</SingleValueCard>
-		<SingleValueCard name="Starts">{data.stats.flightsCount}</SingleValueCard>
-		<SingleValueCard name="PIC Starts">{data.stats.picFlightsCount}</SingleValueCard>
-		<SingleValueCard name="DBO Starts">{data.stats.dboFlightsCount}</SingleValueCard>
-		<SingleValueCard name="PAX Starts">{data.stats.paxFlightsCount}</SingleValueCard>
-	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Totaal tijd"
-			><TimeDisplay showMinutes={false} value={data.stats.totalTime} /></SingleValueCard
-		>
-		<SingleValueCard name="PIC tijd"
-			><TimeDisplay showMinutes={false} value={data.stats.picTime} /></SingleValueCard
-		>
-		<SingleValueCard name="DBO tijd"
-			><TimeDisplay showMinutes={false} value={data.stats.dboTime} /></SingleValueCard
-		>
-		<SingleValueCard name="PAX tijd"
-			><TimeDisplay showMinutes={false} value={data.stats.paxTime} /></SingleValueCard
-		>
-	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Vluchten per dag"
-			>{round(data.stats.averageFlightsPerDay)}</SingleValueCard
-		>
-		<SingleValueCard name="PIC vluchten per dag"
-			>{round(data.stats.averagePicFlightsPerDay)}</SingleValueCard
-		>
-		<SingleValueCard name="DBO vluchten per dag"
-			>{round(data.stats.averageDboFlightsPerDay)}</SingleValueCard
-		>
-		<SingleValueCard name="Minuten per dag"
-			>{round(data.stats.averageMinutesPerDay)}</SingleValueCard
-		>
-	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Starts per jaar">{round(data.stats.averageStartsYear)}</SingleValueCard>
-		<SingleValueCard name="PIC starts per jaar"
-			>{round(data.stats.averagePicStartsYear)}</SingleValueCard
-		>
-		<SingleValueCard name="Tijd per jaar">
-			<TimeDisplay value={data.stats.averageMinutesYear} />
-		</SingleValueCard>
-	</div>
-</section>
+	<section class="statscontainer segment">
+		<div class="stats shadow">
+			<SingleValueCard name="Piloten">{data.stats.pilots}</SingleValueCard>
+			<SingleValueCard name="Starts">{data.stats.flightsCount}</SingleValueCard>
+			<SingleValueCard name="PIC Starts">{data.stats.picFlightsCount}</SingleValueCard>
+			<SingleValueCard name="DBO Starts">{data.stats.dboFlightsCount}</SingleValueCard>
+			<SingleValueCard name="PAX Starts">{data.stats.paxFlightsCount}</SingleValueCard>
+		</div>
+		<div class="stats shadow">
+			<SingleValueCard name="Totaal tijd"
+				><TimeDisplay showMinutes={false} value={data.stats.totalTime} /></SingleValueCard
+			>
+			<SingleValueCard name="PIC tijd"
+				><TimeDisplay showMinutes={false} value={data.stats.picTime} /></SingleValueCard
+			>
+			<SingleValueCard name="DBO tijd"
+				><TimeDisplay showMinutes={false} value={data.stats.dboTime} /></SingleValueCard
+			>
+			<SingleValueCard name="PAX tijd"
+				><TimeDisplay showMinutes={false} value={data.stats.paxTime} /></SingleValueCard
+			>
+		</div>
+		<div class="stats shadow">
+			<SingleValueCard name="Vluchten per dag"
+				>{round(data.stats.averageFlightsPerDay)}</SingleValueCard
+			>
+			<SingleValueCard name="PIC vluchten per dag"
+				>{round(data.stats.averagePicFlightsPerDay)}</SingleValueCard
+			>
+			<SingleValueCard name="DBO vluchten per dag"
+				>{round(data.stats.averageDboFlightsPerDay)}</SingleValueCard
+			>
+			<SingleValueCard name="Minuten per dag"
+				>{round(data.stats.averageMinutesPerDay)}</SingleValueCard
+			>
+		</div>
+		<div class="stats shadow">
+			<SingleValueCard name="Starts per jaar">{round(data.stats.averageStartsYear)}</SingleValueCard
+			>
+			<SingleValueCard name="PIC starts per jaar"
+				>{round(data.stats.averagePicStartsYear)}</SingleValueCard
+			>
+			<SingleValueCard name="Tijd per jaar">
+				<TimeDisplay value={data.stats.averageMinutesYear} />
+			</SingleValueCard>
+		</div>
+	</section>
+{/if}
 
 <style lang="postcss">
 	ul {
