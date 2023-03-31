@@ -27,9 +27,11 @@
 	<li>📵 Werkt niet goed op telefoons</li>
 </ul>
 
-<div class="buttons flex flex-row gap-5 justify-center py-12">
-	<a href="/load/csv" class="btn btn-lg">Data inladen uit CSV</a>
+<div class="buttons flex flex-row gap-5 justify-center mt-12 mb-2">
 	<a href="/load/zweefapp" class="btn btn-lg">Data inladen uit de Zweef App</a>
+</div>
+<div class="buttons flex flex-row gap-5 justify-center mb-12">
+	<a href="/load/csv" class="btn btn-outline">Data inladen uit CSV</a>
 </div>
 
 <h3>Nationale Statistieken</h3>

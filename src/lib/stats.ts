@@ -15,6 +15,7 @@ export function sanitizeData(results: Flight[]): Flight[] {
 		row.is_examen = possiblyStringRow(row.is_examen);
 		row.is_profcheck = possiblyStringRow(row.is_profcheck);
 		row.is_overland = possiblyStringRow(row.is_overland);
+		row.year = row.year || Number(row.datum.split('-')[0]);
 		data.push(row);
 	});
 	return data;
