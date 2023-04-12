@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/florisporro/zweefstats/compare/v1.1.0...v1.2.0) (2023-03-31)
+
+
+### Features
+
+* Release van functie om zweefstats rechtstreeks uit zweefapp te openen ([3239315](https://github.com/florisporro/zweefstats/commit/3239315facbdbf2e5c4d572e63c9815751b5f169))
+
+
+### Bug Fixes
+
+* Gemiddelde PIC starts per jaar werd niet juist berekend ([6c4eebe](https://github.com/florisporro/zweefstats/commit/6c4eebebd095b77dff8b67ce2e69a3bab6377df8))
+* Laat homepage ook zien als statistieken niet geladen kunnen worden ([00eea28](https://github.com/florisporro/zweefstats/commit/00eea2832a50311c87dddb8fe7bbd46a23595a99))
+
 ## [1.1.0](https://github.com/florisporro/zweefstats/compare/v1.0.0...v1.1.0) (2023-03-28)
 
 
