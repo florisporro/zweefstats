@@ -1,6 +1,4 @@
-<p class="text-white text-center">
-	Volg de volgende stappen om je data te importen uit de Zweef app:
-</p>
+<p class="text-center">Volg de volgende stappen om je data te importen uit de Zweef app:</p>
 
 <div class="flex flex-row flex-1 my-8 justify-center">
 	<div class="rounded-xl max-w-sm overflow-hidden shadow-lg mr-4">

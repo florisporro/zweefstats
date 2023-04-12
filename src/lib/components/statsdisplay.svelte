@@ -87,10 +87,13 @@
 			</div>
 		</div>
 	{:else}
-		<h2>Statistieken voor {statistics.pilot}</h2>
+		<div class="text-slate-600 uppercase font-bold text-center mb-4">
+			Statistieken voor {statistics.pilot}
+		</div>
+		<div class="divider" />
 
 		{#if !shareStatsClosed}
-			<div class="alert alert-warning shadow-lg mb-5 w-2/3 mx-auto">
+			<div class="alert alert-warning shadow-lg mb-5 md:w-2/3 mx-auto">
 				{#if shareStatsSending}
 					<div>
 						<span class="text-4xl p-6">📡</span>
@@ -128,7 +131,7 @@
 			</div>
 		{/if}
 
-		<div class="alert shadow-lg w-2/3 mx-auto">
+		<div class="alert alert-info shadow-lg md:w-2/3 mx-auto">
 			<div>
 				<span class="text-4xl p-6">ℹ️</span>
 
@@ -146,107 +149,86 @@
 <div class="divider">Totalen</div>
 
 <section class="statscontainer segment">
-	<div class="stats shadow">
-		<SingleValueCard name="Totaal starts">{statistics.flightsCount}</SingleValueCard>
-		<SingleValueCard name="Totaal tijd"
-			><TimeDisplay value={statistics.totalTime} /></SingleValueCard
+	<SingleValueCard name="Totaal starts">{statistics.flightsCount}</SingleValueCard>
+	<SingleValueCard name="Totaal tijd"><TimeDisplay value={statistics.totalTime} /></SingleValueCard>
+	<SingleValueCard name="Totaal DBO starts">{statistics.dboFlightsCount}</SingleValueCard>
+	<SingleValueCard name="DBO tijd"><TimeDisplay value={statistics.dboTime} /></SingleValueCard>
+	<SingleValueCard name="Totaal PIC starts">{statistics.picFlightsCount}</SingleValueCard>
+	<SingleValueCard name="PIC tijd"><TimeDisplay value={statistics.picTime} /></SingleValueCard>
+	<SingleValueCard name="Totaal starts als PAX">
+		<a
+			href={'#'}
+			on:click|preventDefault={() => {
+				inspectFlights = statistics.paxFlights;
+			}}>{statistics.paxFlightsCount}</a
 		>
-	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Totaal DBO starts">{statistics.dboFlightsCount}</SingleValueCard>
-		<SingleValueCard name="DBO tijd"><TimeDisplay value={statistics.dboTime} /></SingleValueCard>
-	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Totaal PIC starts">{statistics.picFlightsCount}</SingleValueCard>
-		<SingleValueCard name="PIC tijd"><TimeDisplay value={statistics.picTime} /></SingleValueCard>
-	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Totaal starts als PAX">
-			<a
-				href={'#'}
-				on:click|preventDefault={() => {
-					inspectFlights = statistics.paxFlights;
-				}}>{statistics.paxFlightsCount}</a
-			>
-		</SingleValueCard>
-		<SingleValueCard name="PAX tijd"><TimeDisplay value={statistics.paxTime} /></SingleValueCard>
-	</div>
+	</SingleValueCard>
+	<SingleValueCard name="PAX tijd"><TimeDisplay value={statistics.paxTime} /></SingleValueCard>
 </section>
 
 <div class="divider">Gemiddelden</div>
 
 <section class="statscontainer segment">
-	<div class="stats shadow">
-		<SingleValueCard name="Starts per dag"
-			>{Math.round(statistics.averageFlightsPerDay * 100) / 100}</SingleValueCard
-		>
-		<SingleValueCard name="PIC starts per dag"
-			>{Math.round(statistics.averagePicFlightsPerDay * 100) / 100}</SingleValueCard
-		>
-		<SingleValueCard name="DBO starts per dag"
-			>{Math.round(statistics.averageDboFlightsPerDay * 100) / 100}</SingleValueCard
-		>
-	</div>
-	<div class="stats shadow">
-		<SingleValueCard name="Vliegtijd per dag (min)"
-			>{Math.round(statistics.averageMinutesPerDay * 100) / 100}</SingleValueCard
-		>
-		<SingleValueCard name="Vliegtijd per jaar"
-			><TimeDisplay value={Math.round(statistics.averageMinutesYear)} /></SingleValueCard
-		>
-	</div>
+	<SingleValueCard name="Starts per dag"
+		>{Math.round(statistics.averageFlightsPerDay * 100) / 100}</SingleValueCard
+	>
+	<SingleValueCard name="PIC starts per dag"
+		>{Math.round(statistics.averagePicFlightsPerDay * 100) / 100}</SingleValueCard
+	>
+	<SingleValueCard name="DBO starts per dag"
+		>{Math.round(statistics.averageDboFlightsPerDay * 100) / 100}</SingleValueCard
+	>
+	<SingleValueCard name="Vliegtijd per dag (min)"
+		>{Math.round(statistics.averageMinutesPerDay * 100) / 100}</SingleValueCard
+	>
+	<SingleValueCard name="Vliegtijd per jaar"
+		><TimeDisplay value={Math.round(statistics.averageMinutesYear)} /></SingleValueCard
+	>
 </section>
 
 <div class="divider">Overland vluchten</div>
 
-<section class="statscontainer segment">
-	{#if statistics.xcountryFlightsCount > 0}
-		<div class="stats shadow">
-			<SingleValueCard name="Overland vluchten">
-				<a
-					href={'#'}
-					on:click|preventDefault={() => {
-						inspectFlights = statistics.xcountryFlights;
-					}}>{statistics.xcountryFlightsCount}</a
-				>
-			</SingleValueCard>
-			<SingleValueCard name="Overland pogingen">
-				<a
-					href={'#'}
-					on:click|preventDefault={() => {
-						inspectFlights = statistics.xcountryattemptFlights;
-					}}>{statistics.xcountryattemptFlightsCount}</a
-				>
-			</SingleValueCard>
-		</div>
+{#if statistics.xcountryFlightsCount > 0}
+	<div class="alert alert-info shadow-lg md:w-2/3 mb-4 mx-auto">
+		<div>
+			<span class="text-4xl p-6">ℹ️</span>
 
-		<div class="alert shadow-lg w-2/3 mx-auto">
-			<div>
-				<span class="text-4xl p-6">ℹ️</span>
-
-				<span
-					>Een buitenlanding is hier: een vlucht waar de plek van aankomst verschilt van de plek van
-					vertrek. Als deze data niet klopt, kun je die wijzigen in de Zweef App.
-				</span>
-			</div>
+			<span
+				>Een buitenlanding is hier: een vlucht waar de plek van aankomst verschilt van de plek van
+				vertrek. Als deze data niet klopt, kun je die wijzigen in de Zweef App.
+			</span>
 		</div>
-		<div class="stats shadow">
-			<SingleValueCard name="Laatste overland"
-				>{statistics.xcountryFlights[0].datum}</SingleValueCard
+	</div>
+	<section class="statscontainer segment">
+		<SingleValueCard name="Overland vluchten">
+			<a
+				href={'#'}
+				on:click|preventDefault={() => {
+					inspectFlights = statistics.xcountryFlights;
+				}}>{statistics.xcountryFlightsCount}</a
 			>
-			<SingleValueCard name="Buitenlandingen">
-				<a
-					href={'#'}
-					on:click|preventDefault={() => {
-						inspectFlights = statistics.outlandings;
-					}}>{statistics.outlandings.length}</a
-				>
-			</SingleValueCard>
-		</div>
-	{:else}
-		<p>Geen overland vluchten geregistreerd.</p>
-	{/if}
-</section>
+		</SingleValueCard>
+		<SingleValueCard name="Overland pogingen">
+			<a
+				href={'#'}
+				on:click|preventDefault={() => {
+					inspectFlights = statistics.xcountryattemptFlights;
+				}}>{statistics.xcountryattemptFlightsCount}</a
+			>
+		</SingleValueCard>
+		<SingleValueCard name="Laatste overland">{statistics.xcountryFlights[0].datum}</SingleValueCard>
+		<SingleValueCard name="Buitenlandingen">
+			<a
+				href={'#'}
+				on:click|preventDefault={() => {
+					inspectFlights = statistics.outlandings;
+				}}>{statistics.outlandings.length}</a
+			>
+		</SingleValueCard>
+	</section>
+{:else}
+	<p>Geen overland vluchten geregistreerd.</p>
+{/if}
 
 <div class="divider">Jaren</div>
 
@@ -320,41 +302,31 @@
 
 <section class="statscontainer segment">
 	{#if statistics.examFlights.length > 0}
-		<div class="stats shadow">
-			<SingleValueCard name="Examen vluchten">
-				<a
-					href={'#'}
-					on:click|preventDefault={() => {
-						inspectFlights = statistics.examFlights;
-					}}>{statistics.examFlights.length}</a
-				>
-			</SingleValueCard>
-			<SingleValueCard name="Examen gehaald">{statistics.hasLicense ? '✅' : '❌'}</SingleValueCard>
-		</div>
-		<div class="stats shadow">
-			<SingleValueCard name="Totaal starts"
-				>{statistics.timesAfterExam.flightsCount}</SingleValueCard
+		<SingleValueCard name="Examen vluchten">
+			<a
+				href={'#'}
+				on:click|preventDefault={() => {
+					inspectFlights = statistics.examFlights;
+				}}>{statistics.examFlights.length}</a
 			>
-			<SingleValueCard name="Totaal tijd"
-				><TimeDisplay value={statistics.timesAfterExam.totalTime} /></SingleValueCard
-			>
-		</div>
-		<div class="stats shadow">
-			<SingleValueCard name="Totaal DBO starts"
-				>{statistics.timesAfterExam.dboFlightsCount}</SingleValueCard
-			>
-			<SingleValueCard name="DBO tijd"
-				><TimeDisplay value={statistics.timesAfterExam.dboTime} /></SingleValueCard
-			>
-		</div>
-		<div class="stats shadow">
-			<SingleValueCard name="Totaal PIC starts"
-				>{statistics.timesAfterExam.picFlightsCount}</SingleValueCard
-			>
-			<SingleValueCard name="PIC tijd"
-				><TimeDisplay value={statistics.timesAfterExam.picTime} /></SingleValueCard
-			>
-		</div>
+		</SingleValueCard>
+		<SingleValueCard name="Examen gehaald">{statistics.hasLicense ? '✅' : '❌'}</SingleValueCard>
+		<SingleValueCard name="Totaal starts">{statistics.timesAfterExam.flightsCount}</SingleValueCard>
+		<SingleValueCard name="Totaal tijd"
+			><TimeDisplay value={statistics.timesAfterExam.totalTime} /></SingleValueCard
+		>
+		<SingleValueCard name="Totaal DBO starts"
+			>{statistics.timesAfterExam.dboFlightsCount}</SingleValueCard
+		>
+		<SingleValueCard name="DBO tijd"
+			><TimeDisplay value={statistics.timesAfterExam.dboTime} /></SingleValueCard
+		>
+		<SingleValueCard name="Totaal PIC starts"
+			>{statistics.timesAfterExam.picFlightsCount}</SingleValueCard
+		>
+		<SingleValueCard name="PIC tijd"
+			><TimeDisplay value={statistics.timesAfterExam.picTime} /></SingleValueCard
+		>
 	{:else}
 		<p>Geen examenvluchten geregistreerd.</p>
 	{/if}
@@ -363,7 +335,7 @@
 <div class="divider">Bevoegdhedenmatrix</div>
 
 <section class="segment">
-	<div class="alert shadow-lg w-2/3 mx-auto mb-12">
+	<div class="alert alert-info shadow-lg md:w-2/3 mx-auto mb-12">
 		<div>
 			<span class="text-4xl p-6">ℹ️</span>
 
@@ -440,12 +412,3 @@
 		{/if}
 	</div>
 </section>
-
-<style lang="postcss">
-	.statscontainer {
-		@apply flex flex-col w-full sm:w-3/4 lg:w-2/3 xl:w-1/2 gap-5 mx-auto;
-	}
-	.segment {
-		@apply mb-12;
-	}
-</style>

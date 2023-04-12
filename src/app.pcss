@@ -6,7 +6,7 @@
 
 body,
 html {
-	@apply bg-sky-400;
+	@apply bg-slate-300;
 	font-family: 'Roboto', sans-serif;
 }
 
@@ -20,10 +20,10 @@ h1 {
 }
 
 h2 {
-	@apply text-white text-6xl text-center;
+	@apply text-4xl text-center;
 }
 h3 {
-	@apply text-white text-3xl text-center;
+	@apply text-3xl text-center;
 }
 
 a {
@@ -35,4 +35,12 @@ a:hover {
 
 .segment > p {
 	@apply text-center font-bold;
+}
+
+.statscontainer {
+	@apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3;
+}
+
+.segment {
+	@apply mb-12;
 }

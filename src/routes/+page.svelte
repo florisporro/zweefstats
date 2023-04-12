@@ -11,7 +11,7 @@
 	}
 </script>
 
-<p class="text-white prose mx-auto mb-12">
+<p class="prosemx-auto mb-12 leading-relaxed">
 	Dit tooltje geeft een analyse van de vliegdata op je Zweef App account. Daarmee kun je snel en
 	makkelijk antwoord krijgen op vragen als "hoeveel PIC starts heb ik op type X", "hoeveel overland
 	vluchten heb ik" en "in welk jaar heb ik het meest gevlogen". Je hebt de optie om je gegevens in
@@ -24,7 +24,6 @@
 	<li>✅ Krijg interessante statistieken over je vlieghistorie</li>
 	<li>✅ Volledig lokaal - deel je data alleen als je dat wilt</li>
 	<li>✅ Klik op datapunten om te zien welke vluchten er gebruikt zijn</li>
-	<li>📵 Werkt niet goed op telefoons</li>
 </ul>
 
 <div class="buttons flex flex-row gap-5 justify-center mt-12 mb-2">
@@ -36,69 +35,56 @@
 
 {#if data.stats}
 	<h3>Nationale Statistieken</h3>
-	<p class="text-white prose mx-auto">
+	<p class="mx-auto leading-relaxed">
 		Na het inladen van je eigen statistieken krijg je de optie om je vluchtinformatie te delen.
 		Daarmee kunnen we de onderstaande statistieken berekenen:
 	</p>
-	<p class="text-white prose mx-auto mb-12 text-sm">
+	<p class="mx-auto mb-12 leading-relaxed text-sm">
 		(de herberekening van de statistieken gebeurt eenmaal per uur, op het hele uur)
 	</p>
 
 	<section class="statscontainer segment">
-		<div class="stats shadow">
-			<SingleValueCard name="Piloten">{data.stats.pilots}</SingleValueCard>
-			<SingleValueCard name="Starts">{data.stats.flightsCount}</SingleValueCard>
-			<SingleValueCard name="PIC Starts">{data.stats.picFlightsCount}</SingleValueCard>
-			<SingleValueCard name="DBO Starts">{data.stats.dboFlightsCount}</SingleValueCard>
-			<SingleValueCard name="PAX Starts">{data.stats.paxFlightsCount}</SingleValueCard>
-		</div>
-		<div class="stats shadow">
-			<SingleValueCard name="Totaal tijd"
-				><TimeDisplay showMinutes={false} value={data.stats.totalTime} /></SingleValueCard
-			>
-			<SingleValueCard name="PIC tijd"
-				><TimeDisplay showMinutes={false} value={data.stats.picTime} /></SingleValueCard
-			>
-			<SingleValueCard name="DBO tijd"
-				><TimeDisplay showMinutes={false} value={data.stats.dboTime} /></SingleValueCard
-			>
-			<SingleValueCard name="PAX tijd"
-				><TimeDisplay showMinutes={false} value={data.stats.paxTime} /></SingleValueCard
-			>
-		</div>
-		<div class="stats shadow">
-			<SingleValueCard name="Vluchten per dag"
-				>{round(data.stats.averageFlightsPerDay)}</SingleValueCard
-			>
-			<SingleValueCard name="PIC vluchten per dag"
-				>{round(data.stats.averagePicFlightsPerDay)}</SingleValueCard
-			>
-			<SingleValueCard name="DBO vluchten per dag"
-				>{round(data.stats.averageDboFlightsPerDay)}</SingleValueCard
-			>
-			<SingleValueCard name="Minuten per dag"
-				>{round(data.stats.averageMinutesPerDay)}</SingleValueCard
-			>
-		</div>
-		<div class="stats shadow">
-			<SingleValueCard name="Starts per jaar">{round(data.stats.averageStartsYear)}</SingleValueCard
-			>
-			<SingleValueCard name="PIC starts per jaar"
-				>{round(data.stats.averagePicStartsYear)}</SingleValueCard
-			>
-			<SingleValueCard name="Tijd per jaar">
-				<TimeDisplay value={data.stats.averageMinutesYear} />
-			</SingleValueCard>
-		</div>
+		<SingleValueCard name="Piloten">{data.stats.pilots}</SingleValueCard>
+		<SingleValueCard name="Starts">{data.stats.flightsCount}</SingleValueCard>
+		<SingleValueCard name="PIC Starts">{data.stats.picFlightsCount}</SingleValueCard>
+		<SingleValueCard name="DBO Starts">{data.stats.dboFlightsCount}</SingleValueCard>
+		<SingleValueCard name="PAX Starts">{data.stats.paxFlightsCount}</SingleValueCard>
+		<SingleValueCard name="Totaal tijd"
+			><TimeDisplay showMinutes={false} value={data.stats.totalTime} /></SingleValueCard
+		>
+		<SingleValueCard name="PIC tijd"
+			><TimeDisplay showMinutes={false} value={data.stats.picTime} /></SingleValueCard
+		>
+		<SingleValueCard name="DBO tijd"
+			><TimeDisplay showMinutes={false} value={data.stats.dboTime} /></SingleValueCard
+		>
+		<SingleValueCard name="PAX tijd"
+			><TimeDisplay showMinutes={false} value={data.stats.paxTime} /></SingleValueCard
+		>
+		<SingleValueCard name="Vluchten per dag"
+			>{round(data.stats.averageFlightsPerDay)}</SingleValueCard
+		>
+		<SingleValueCard name="PIC vluchten per dag"
+			>{round(data.stats.averagePicFlightsPerDay)}</SingleValueCard
+		>
+		<SingleValueCard name="DBO vluchten per dag"
+			>{round(data.stats.averageDboFlightsPerDay)}</SingleValueCard
+		>
+		<SingleValueCard name="Minuten per dag"
+			>{round(data.stats.averageMinutesPerDay)}</SingleValueCard
+		>
+		<SingleValueCard name="Starts per jaar">{round(data.stats.averageStartsYear)}</SingleValueCard>
+		<SingleValueCard name="PIC starts per jaar"
+			>{round(data.stats.averagePicStartsYear)}</SingleValueCard
+		>
+		<SingleValueCard name="Tijd per jaar">
+			<TimeDisplay value={data.stats.averageMinutesYear} />
+		</SingleValueCard>
 	</section>
 {/if}
 
 <style lang="postcss">
 	ul {
-		@apply text-center text-white text-lg leading-8 lg:text-xl lg:leading-9 xl:text-2xl xl:leading-10;
-	}
-
-	.statscontainer {
-		@apply flex flex-col w-full sm:w-3/4 lg:w-2/3 xl:w-1/2 gap-5 mx-auto;
+		@apply text-lg leading-8 lg:text-xl lg:leading-9 xl:text-2xl xl:leading-10;
 	}
 </style>
