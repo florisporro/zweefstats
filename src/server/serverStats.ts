@@ -45,7 +45,12 @@ function sumField(array: { [key: string]: number }[], field: string) {
 
 // Gets an average of all the values in an array
 function averageArray(array: number[]) {
-	return array.reduce((a, b) => a + b, 0) / array.length;
+	const sanitizedArray = array.map((value) => {
+		const number = Number(value);
+		if (isNaN(number)) return 0;
+		return number;
+	});
+	return sanitizedArray.reduce((a, b) => Number(a) + Number(b), 0) / array.length;
 }
 
 export function compileAverages(data: FlightData[]): NationalStatistics {
