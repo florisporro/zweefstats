@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/florisporro/zweefstats/compare/v1.2.0...v1.3.0) (2023-04-15)
+
+
+### Features
+
+* Layout & styling verbeterd en geschikt gemaakt voor telefoons ([4c1d556](https://github.com/florisporro/zweefstats/commit/4c1d556d179abc3bb8e28500654832e9869e707c))
+
+
+### Bug Fixes
+
+* Waarschuwing toegevoegd over CSV export probleem ([d3283dd](https://github.com/florisporro/zweefstats/commit/d3283dd1e5a49cca0bfe0ba46380184b8f2000f8))
+
 ## [1.2.0](https://github.com/florisporro/zweefstats/compare/v1.1.0...v1.2.0) (2023-03-31)
 
 
