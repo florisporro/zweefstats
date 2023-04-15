@@ -167,8 +167,14 @@ export function getTimes(data: Flight[], pilot: string): Times {
 function averageFlightProperty(property: string, timesObject: FlightsBy): number {
 	// Create an array from the object with the property
 	const valuesArray = Object.values(timesObject).map((a) => a[property]) as number[];
+	// Make sure they are really definitely all numbers
+	const sanitizedArray = valuesArray.map((value) => {
+		const number = Number(value);
+		if (isNaN(number)) return 0;
+		return number;
+	});
 	// Remove zero values
-	const filteredArray = valuesArray.filter((a) => a > 0);
+	const filteredArray = sanitizedArray.filter((a) => a > 0);
 	// Calculate average
 	return filteredArray.reduce((a, b) => a + b, 0) / filteredArray.length;
 }
