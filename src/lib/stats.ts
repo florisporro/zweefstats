@@ -274,6 +274,7 @@ export function getStatistics(data: Flight[]): Stats {
 	if (airplanes.includes('LS-8a')) hasLicense = true;
 	if (airplanes.includes('LS-4b')) hasLicense = true;
 	if (airplanes.includes('ASG-29')) hasLicense = true;
+	if (examFlights.length > 0) hasLicense = true;
 
 	return {
 		pilot,
