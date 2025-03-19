@@ -5,7 +5,7 @@ interface FlightData {
 	pilot: string;
 	pilotId: number;
 	club: string | undefined;
-	data: Flight[];
+	data: DutchFlight[];
 }
 
 interface NationalStatistics {

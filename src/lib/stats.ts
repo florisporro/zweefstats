@@ -1,25 +1,4 @@
-function possiblyStringRow(value: string | boolean) {
-	if (typeof value === 'string') {
-		return value === 'True' ? true : false;
-	} else {
-		return value;
-	}
-}
-
-export function sanitizeData(results: Flight[]): Flight[] {
-	const data: Flight[] = [];
-	results.forEach((row: Flight) => {
-		row.is_prive = possiblyStringRow(row.is_prive);
-		row.is_fis = possiblyStringRow(row.is_fis);
-		row.is_training = possiblyStringRow(row.is_training);
-		row.is_examen = possiblyStringRow(row.is_examen);
-		row.is_profcheck = possiblyStringRow(row.is_profcheck);
-		row.is_overland = possiblyStringRow(row.is_overland);
-		row.year = row.year || Number(row.datum.split('-')[0]);
-		data.push(row);
-	});
-	return data;
-}
+// Sanitization logic moved to src/lib/sanitize.ts
 
 export function sumTotal(array: number[]): number {
 	return array.reduce((partialSum, a) => partialSum + a, 0);
@@ -107,7 +86,7 @@ export function formatTime(time: number) {
 	return `${hours} uur en ${minutes} minuten`;
 }
 
-export function getTimes(data: Flight[], pilot: string): Times {
+export function getTimes(data: DutchFlight[], pilot: string): Times {
 	// Find all flights where pilot was PIC
 	const picFlights = data.filter((a) => a.gezagvoerder_naam === pilot);
 
@@ -133,12 +112,16 @@ export function getTimes(data: Flight[], pilot: string): Times {
 	const paxTimeFormatted = formatTime(paxTime);
 
 	// Find all xcountry flights for pilot
-	const xcountryFlights = picFlights.filter((a) => a.is_overland === true && a.vluchtduur > 33);
+	const xcountryFlights = picFlights.filter((a) => {
+		// Check for overland and has a valid flight duration greater than 33 minutes
+		return a.is_overland === true && typeof a.vluchtduur === 'number' && a.vluchtduur > 33;
+	});
 
 	// Find all xcountry attempts flights for pilot
-	const xcountryattemptFlights = picFlights.filter(
-		(a) => a.is_overland === true && a.vluchtduur < 33
-	);
+	const xcountryattemptFlights = picFlights.filter((a) => {
+		// Check for overland and has a valid flight duration less than 33 minutes
+		return a.is_overland === true && typeof a.vluchtduur === 'number' && a.vluchtduur < 33;
+	});
 
 	return {
 		flights: data,
@@ -179,7 +162,7 @@ function averageFlightProperty(property: string, timesObject: FlightsBy): number
 	return filteredArray.reduce((a, b) => a + b, 0) / filteredArray.length;
 }
 
-export function getStatistics(data: Flight[]): Stats {
+export function getStatistics(data: DutchFlight[]): Stats {
 	// Find the most likely name of the pilot
 	const pilots: string[] = [
 		...data.map((a) => (typeof a.gezagvoerder_naam === 'string' ? a.gezagvoerder_naam : '')),
@@ -191,7 +174,8 @@ export function getStatistics(data: Flight[]): Stats {
 	const mostLikelyPilot = topKFrequent(pilots);
 	const pilot = mostLikelyPilot[0];
 
-	const pilotId = data.find((a) => a.gezagvoerder_naam === pilot)?.gezagvoerder_id;
+	// Explicitly make pilotId either a number or null
+	const pilotId: number | null = data.find((a) => a.gezagvoerder_naam === pilot)?.gezagvoerder_id || null;
 
 	const complete = getTimes(data, pilot);
 
@@ -202,8 +186,8 @@ export function getStatistics(data: Flight[]): Stats {
 	const examFlights = data.filter((a) => a.is_examen);
 
 	// Get all flights after the last exam flights
-	const lastExamIndex = data.indexOf(examFlights[0]);
-	const flightsAfterExam = data.slice(0, lastExamIndex);
+	const lastExamIndex = examFlights.length > 0 ? data.indexOf(examFlights[0]) : -1;
+	const flightsAfterExam = lastExamIndex >= 0 ? data.slice(0, lastExamIndex) : [];
 
 	const timesAfterExam = getTimes(flightsAfterExam, pilot);
 

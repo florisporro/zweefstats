@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import Statsdisplay from '$lib/components/statsdisplay.svelte';
 	import StatsDisplay from '$lib/components/statsdisplay.svelte';
-	import { sanitizeData } from '$lib/stats';
+	import { sanitizeData } from '$lib/sanitize';
 	import { error } from '@sveltejs/kit';
 	import type { PageData } from './$types';
 

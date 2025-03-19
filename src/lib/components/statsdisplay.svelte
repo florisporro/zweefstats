@@ -9,7 +9,7 @@
 	import Flights from './display/Flights.svelte';
 	import Popup from './popup.svelte';
 
-	export let data: Flight[];
+	export let data: DutchFlight[];
 	let statistics: Stats;
 
 	let inspectFlights: Flight[] = [];

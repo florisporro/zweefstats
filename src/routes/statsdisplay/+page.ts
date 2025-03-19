@@ -1,12 +1,12 @@
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { sanitizeData } from '$lib/stats';
+import { sanitizeData } from '$lib/sanitize';
 
 export const trailingSlash = 'ignore';
 
 export const load = (async () => {
 	const rawData: string | null = sessionStorage.getItem('history');
-	let json, sanitizedData: Flight[];
+	let json, sanitizedData: DutchFlight[];
 	if (rawData === null) throw error(400, 'Geen data ingeladen');
 
 	if (rawData !== null) {

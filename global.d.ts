@@ -1,6 +1,6 @@
 declare type FlightProps = string | number | boolean | undefined | null;
 
-declare interface Flight {
+declare interface DutchFlight {
 	[key: string]: FlightProps;
 	uuid: string;
 	datum: string;
@@ -38,6 +38,49 @@ declare interface Flight {
 	notitie: string | null;
 }
 
+declare interface EnglishFlight {
+	[key: string]: FlightProps;
+	uuid: string;
+	date: string;
+	year: number;
+	number: number;
+	date_created: string;
+	date_updated: string;
+	is_private: boolean | string;
+	departure_airport: string;
+	arrival_airport: string;
+	callsign: string;
+	registration: string;
+	type: string;
+	tow_uuid: string | null;
+	pic_id: number | null;
+	pic_name: string | null;
+	passenger_id: number | null;
+	passenger_name: string | null;
+	paying_member_id: number | null;
+	start_method: string;
+	category: string | null;
+	is_fis: boolean | string;
+	is_training: boolean | string;
+	is_exam: boolean | string;
+	is_profcheck: boolean | string;
+	is_crosscountry: boolean | string;
+	distance: number;
+	starts: number;
+	departure_time: string;
+	arrival_time: string;
+	flightduration: number;
+	blocktime: number;
+	height: number;
+	remarks: string | null;
+	notes: string | null;
+	signed_date: string | null;
+	signed_cert: string | null;
+	signed_remark: string | null;
+}
+
+declare type Flight = DutchFlight | EnglishFlight;
+
 declare interface FlightsBy {
 	[key: string | number]: Times;
 }
@@ -52,6 +95,8 @@ declare interface Times {
 	dboFlightsCount: number;
 	paxFlights: Flight[];
 	paxFlightsCount: number;
+	instructorFlights: Flight[];
+	instructorFlightsCount: number;
 	totalTime: number;
 	totalTimeFormatted: string;
 	picTime: number;
@@ -60,6 +105,8 @@ declare interface Times {
 	dboTimeFormatted: string;
 	paxTime: number;
 	paxTimeFormatted: string;
+	instructorTime: number;
+	instructorTimeFormatted: string;
 	xcountryFlights: Flight[];
 	xcountryFlightsCount: number;
 	xcountryattemptFlights: Flight[];
@@ -67,9 +114,9 @@ declare interface Times {
 }
 
 declare interface Stats extends Times {
-	[key: string]: Flight[] | FlightsBy | FlightProps[] | Times | number | string | boolean;
+	[key: string]: Flight[] | FlightsBy | FlightProps[] | Times | number | string | boolean | null | undefined;
 	pilot: string;
-	pilotId: number;
+	pilotId: number | null;
 	timesAfterExam: Times;
 	xcountryFlights: Flight[];
 	xcountryattemptFlights: Flight[];
