@@ -78,7 +78,7 @@ const config: Permission[] = [
 		requirements: [
 			commonRequirements.SPL,
 			{
-				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min.'
+				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min. Indien er eerst 15 starts op de LS4b gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
 			},
 			{
 				name: 'Overgelest zijn op de LS-4 door een bevoegde instructeur.'
@@ -96,7 +96,7 @@ const config: Permission[] = [
 		requirements: [
 			commonRequirements.SPL,
 			{
-				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min.'
+				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min. Indien er eerst 15 starts op de LS-8 gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
 			},
 			{
 				name: 'Overgelest zijn op de LS-4 door een bevoegde instructeur.'
@@ -118,12 +118,12 @@ const config: Permission[] = [
 				calculate: (stats) => stats.timesAfterExam.picTime / 60
 			},
 			{
-				name: 'Tenminste 30 starts op de LS8 of gelijkwaardig type',
+				name: 'Tenminste 30 starts op de LS4b/LS8 of gelijkwaardig type',
 				goal: 30,
 				calculate: (stats) => totalStartCount(stats, [...commonTypes.ls4, ...commonTypes.ls8])
 			},
 			{
-				name: 'Twee goede overles starts op de Duo Discus met verschillende door de club daartoe aangewezen instructeurs'
+				name: 'Twee goede overles starts op de Duo Discus met verschillende door de club daartoe aangewezen instructeurs. Indien in het bezit van een sleepaantekening dient 1 van deze overlesstarts een vliegtuigsleepstart te zijn.'
 			}
 		]
 	},
@@ -146,7 +146,7 @@ const config: Permission[] = [
 				name: 'D-brevet'
 			},
 			{
-				name: 'Twee goede overles starts op de Duo Discus met verschillende door de club daartoe aangewezen instructeurs (indien in bezit van een sleepaantekening dient een van de overles starts een sleepstart te zijn)'
+				name: 'Twee goede overles starts op de Duo Discus met verschillende door de club daartoe aangewezen instructeurs. Indien in het bezit van een sleepaantekening dient 1 van deze overlesstarts een vliegtuigsleepstart te zijn.'
 			},
 			{
 				name: 'Overgelest zijn op de ASW-27 door een bevoegde instructeur.'
@@ -182,10 +182,28 @@ const config: Permission[] = [
 				name: 'D-brevet'
 			},
 			{
-				name: 'Twee goede overles starts op de Duo Discus met verschillende door de club daartoe aangewezen instructeurs (indien in bezit van een sleepaantekening dient een van de overles starts een sleepstart te zijn)'
+				name: 'Twee goede overles starts op de Duo Discus met verschillende door de club daartoe aangewezen instructeurs. Indien in het bezit van een sleepaantekening dient 1 van deze overlesstarts een vliegtuigsleepstart te zijn.'
 			},
 			{
 				name: 'Overgelest zijn op de ASW-29 door een bevoegde instructeur.'
+			}
+		]
+	},
+	{
+		name: 'Baby PH-190 en Prefect PH-192',
+		requirements: [
+			commonRequirements.SPL,
+			{
+				name: 'Een bevoegd verklaring in de ACvZ.zweef.app waaruit toestemming blijkt van een instructeur.'
+			},
+			{
+				name: 'Recente briefing door instructeur of kongsihouder met ervaring op het vliegtuig'
+			},
+			{
+				name: 'Voor de PH-190: 2 goede overlesstarts op de Rhön of een vergelijkbaar type met 2 succesvolle sliplandingen en voldoende vaardigheid in het slippen.'
+			},
+			{
+				name: 'Toestemming en aanwezigheid van een van de kongsi leden op het vliegveld'
 			}
 		]
 	},
@@ -215,6 +233,15 @@ const config: Permission[] = [
 			},
 			{
 				name: '> 18 jaar'
+			},
+			{
+				name: 'Voldoen aan de eisen voor lokaal vliegen op het betreffende type.'
+			},
+			{
+				name: 'Een goede EASA-checkstart volgens EASA.SFCL.115(a)(2)(ii)(A) met een door de club daartoe aangewezen instructeur.'
+			},
+			{
+				name: 'Voldoen aan de SFCL eisen omtrent passagiers vliegen EASA.SFCL.115'
 			}
 		]
 	},
@@ -249,10 +276,10 @@ const config: Permission[] = [
 				name: 'Theorie cursus club gevolgd'
 			},
 			{
-				name: 'Twee goede instructie / examen starts op de Duo Discus XLT'
+				name: 'Twee goede instructie / examen starts op de Duo Discus XLT met verschillende door de club daartoe aangewezen instructeurs.'
 			},
 			{
-				name: 'Indien 1 t/m 4 goed gevolgd kan instructie gebruik ASG-29 worden gegeven'
+				name: 'Voor toestemming voor het motorgebruik van de ASG-29E is een aparte overlesbriefing door een daartoe aangewezen instructeur voor het motorgebruik van de ASG-29E vereist.'
 			}
 		]
 	}
