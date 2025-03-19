@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	const dispatch = createEventDispatcher();
 
 	function close() {
@@ -7,12 +7,32 @@
 	}
 
 	export let open: boolean = false;
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape') {
+			close();
+		}
+	}
+
+	function handleClickOutside(event: MouseEvent) {
+		const target = event.target as HTMLElement;
+		if (target.classList.contains('popupcontainer')) {
+			close();
+		}
+	}
+
+	onMount(() => {
+		window.addEventListener('keydown', handleKeydown);
+		return () => {
+			window.removeEventListener('keydown', handleKeydown);
+		};
+	});
 </script>
 
 {#if open}
-	<div class="popupcontainer">
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<div class="popupcontainer" on:click={handleClickOutside}>
 		<div class="popup">
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<div class="header">
 				<div class="closebutton selectable" on:click={close}>❌</div>
 			</div>
@@ -30,7 +50,7 @@
 	}
 
 	.popup {
-		@apply w-2/3 h-2/3 mt-12 mx-auto bg-white rounded-lg;
+		@apply w-5/6 h-5/6 mt-12 mx-auto bg-white rounded-lg;
 	}
 
 	.header {
