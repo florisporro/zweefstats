@@ -100,16 +100,23 @@ export function getTimes(data: DutchFlight[], pilot: string): Times {
 		(a) => a.tweede_inzittende_naam === pilot && a.is_training === false && a.is_fis === false
 	);
 
+	// Find all flights where pilot was Instructor (FIS/training/profcheck)
+	const instructorFlights = picFlights.filter(
+		(a) => a.is_fis === true || a.is_training === true || a.is_profcheck === true
+	);
+
 	// Sum flight time by category
 	const totalTime = sumField(data, 'vluchtduur');
 	const picTime = sumField(picFlights, 'vluchtduur');
 	const dboTime = sumField(dboFlights, 'vluchtduur');
 	const paxTime = sumField(paxFlights, 'vluchtduur');
+	const instructorTime = sumField(instructorFlights, 'vluchtduur');
 
 	const totalTimeFormatted = formatTime(totalTime);
 	const picTimeFormatted = formatTime(picTime);
 	const dboTimeFormatted = formatTime(dboTime);
 	const paxTimeFormatted = formatTime(paxTime);
+	const instructorTimeFormatted = formatTime(instructorTime);
 
 	// Find all xcountry flights for pilot
 	const xcountryFlights = picFlights.filter((a) => {
@@ -132,14 +139,18 @@ export function getTimes(data: DutchFlight[], pilot: string): Times {
 		dboFlightsCount: sumField(dboFlights, 'starts'),
 		paxFlights,
 		paxFlightsCount: sumField(paxFlights, 'starts'),
+		instructorFlights,
+		instructorFlightsCount: sumField(instructorFlights, 'starts'),
 		totalTime,
 		picTime,
 		dboTime,
 		paxTime,
+		instructorTime,
 		totalTimeFormatted,
 		picTimeFormatted,
 		dboTimeFormatted,
 		paxTimeFormatted,
+		instructorTimeFormatted,
 		xcountryFlights,
 		xcountryFlightsCount: sumField(xcountryFlights, 'starts'),
 		xcountryattemptFlights,

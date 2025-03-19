@@ -164,6 +164,16 @@
 		>
 	</SingleValueCard>
 	<SingleValueCard name="PAX tijd"><TimeDisplay value={statistics.paxTime} /></SingleValueCard>
+	<SingleValueCard name="FI starts">
+		<a
+			href={'#'}
+			on:click|preventDefault={() => {
+				inspectFlights = statistics.instructorFlights;
+			}}>{statistics.instructorFlightsCount}</a
+		>
+	</SingleValueCard>
+	<SingleValueCard name="FI tijd"><TimeDisplay value={statistics.instructorTime} /></SingleValueCard
+	>
 </section>
 
 <div class="divider">Gemiddelden</div>
@@ -243,6 +253,8 @@
 			{ key: 'dboFlightsCount', name: 'DBO Vluchten' },
 			{ key: 'picFlightsCount', name: 'PIC Vluchten' },
 			{ key: 'paxFlightsCount', name: 'PAX Vluchten' },
+			{ key: 'instructorFlightsCount', name: 'FI Vluchten' },
+			{ key: 'instructorTimeFormatted', name: 'FI Tijd' },
 			{ key: 'xcountryFlightsCount', name: 'Overland vluchten' },
 			{ key: 'xcountryattemptFlightsCount', name: 'Overland pogingen' }
 		]}
@@ -261,7 +273,8 @@
 			{ key: 'totalTimeFormatted', name: 'Tijd' },
 			{ key: 'dboFlightsCount', name: 'DBO Vluchten' },
 			{ key: 'picFlightsCount', name: 'PIC Vluchten' },
-			{ key: 'paxFlightsCount', name: 'PAX Vluchten' }
+			{ key: 'paxFlightsCount', name: 'PAX Vluchten' },
+			{ key: 'instructorFlightsCount', name: 'FI Vluchten' }
 		]}
 	/>
 </section>
@@ -277,6 +290,7 @@
 			{ key: 'dboFlightsCount', name: 'DBO Vluchten' },
 			{ key: 'picFlightsCount', name: 'PIC Vluchten' },
 			{ key: 'paxFlightsCount', name: 'PAX Vluchten' },
+			{ key: 'instructorFlightsCount', name: 'FI Vluchten' },
 			{ key: 'xcountryFlightsCount', name: 'Overland vluchten' },
 			{ key: 'xcountryattemptFlightsCount', name: 'Overland pogingen' }
 		]}
@@ -293,7 +307,8 @@
 			{ key: 'totalTimeFormatted', name: 'Tijd' },
 			{ key: 'dboFlightsCount', name: 'DBO Vluchten' },
 			{ key: 'picFlightsCount', name: 'PIC Vluchten' },
-			{ key: 'paxFlightsCount', name: 'PAX Vluchten' }
+			{ key: 'paxFlightsCount', name: 'PAX Vluchten' },
+			{ key: 'instructorFlightsCount', name: 'FI Vluchten' }
 		]}
 	/>
 </section>
@@ -326,6 +341,12 @@
 		>
 		<SingleValueCard name="PIC tijd"
 			><TimeDisplay value={statistics.timesAfterExam.picTime} /></SingleValueCard
+		>
+		<SingleValueCard name="Totaal FI starts"
+			>{statistics.timesAfterExam.instructorFlightsCount}</SingleValueCard
+		>
+		<SingleValueCard name="FI tijd"
+			><TimeDisplay value={statistics.timesAfterExam.instructorTime} /></SingleValueCard
 		>
 	{:else}
 		<p>Geen examenvluchten geregistreerd.</p>
