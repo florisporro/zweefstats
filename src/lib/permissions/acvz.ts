@@ -44,7 +44,79 @@ const commonRequirements = {
 	}
 };
 
+// Common requirements for cross-country flights (overlandvluchten)
+const crossCountryCommonRequirements = {
+	SPL: commonRequirements.SPL,
+	twoHourFlights: {
+		name: 'Tenminste 2 thermiekvluchten met een vluchtduur van elk ten minste 1 uur',
+		goal: 2,
+		calculate: (stats: Stats) => {
+			// Find flights with duration ≥ 60 minutes
+			const longFlights = stats.picFlights.filter(
+				(flight) => typeof flight.vluchtduur === 'number' && flight.vluchtduur >= 60
+			);
+			return longFlights.length;
+		}
+	},
+	recentFlights: {
+		name: 'In de voorafgaande 6 maanden tenminste tien zweefvluchten',
+		goal: 10,
+		calculate: (stats: Stats) => {
+			// Get current date and date 6 months ago
+			const now = new Date();
+			const sixMonthsAgo = new Date();
+			sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+			// Filter flights that occurred within the last 6 months and are not TMG flights
+			const recentFlights = stats.flights.filter((flight) => {
+				if (!flight.datum) return false;
+				if (flight.start_methode === 'tmg') return false;
+				const flightDate = new Date(flight.datum);
+				return flightDate >= sixMonthsAgo && flightDate <= now;
+			});
+
+			return recentFlights.length;
+		}
+	},
+	recentTypeStarts: {
+		name: 'Minimaal twee typestarts in de laatste drie maanden op het type',
+		goal: 2,
+		calculate: (stats: Stats, types: string[]) => {
+			// Get current date and date 3 months ago
+			const now = new Date();
+			const threeMonthsAgo = new Date();
+			threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+			// Filter flights that occurred within the last 3 months
+			// and match the specific type(s)
+			const recentTypeFlights = stats.picFlights.filter((flight) => {
+				if (!flight.datum || !flight.type) return false;
+				const flightDate = new Date(flight.datum);
+				return flightDate >= threeMonthsAgo && flightDate <= now && types.includes(flight.type);
+			});
+
+			return recentTypeFlights.length;
+		}
+	},
+	typeStarts: {
+		name: '30 starts met het betreffende type',
+		goal: 30,
+		calculate: (stats: Stats, types: string[]) => totalStartCount(stats, types)
+	},
+	threeGoodLandings: {
+		name: '3 goede doellandingen met het betreffende type',
+		goal: 3
+	},
+	overlandBriefing: {
+		name: 'Overlandbriefing door een instructeur bij de eerste twee overlandvluchten'
+	},
+	DDIPermission: {
+		name: 'Toestemming van de DDI voor iedere overlandvlucht afzonderlijk'
+	}
+};
+
 const config: Permission[] = [
+	// Lokale vluchten
 	{
 		name: 'ASK-21 (solo)',
 		requirements: [
@@ -78,7 +150,7 @@ const config: Permission[] = [
 		requirements: [
 			commonRequirements.SPL,
 			{
-				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min. Indien er eerst 15 starts op de LS4b gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
+				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min. Indien er eerst 15 starts op de LS-8 gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
 			},
 			{
 				name: 'Overgelest zijn op de LS-4 door een bevoegde instructeur.'
@@ -96,7 +168,7 @@ const config: Permission[] = [
 		requirements: [
 			commonRequirements.SPL,
 			{
-				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min. Indien er eerst 15 starts op de LS-8 gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
+				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min. Indien er eerst 15 starts op de LS4b gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
 			},
 			{
 				name: 'Overgelest zijn op de LS-4 door een bevoegde instructeur.'
@@ -280,6 +352,307 @@ const config: Permission[] = [
 			},
 			{
 				name: 'Voor toestemming voor het motorgebruik van de ASG-29E is een aparte overlesbriefing door een daartoe aangewezen instructeur voor het motorgebruik van de ASG-29E vereist.'
+			}
+		]
+	},
+
+	// Overlandvluchten
+	{
+		name: 'Overlandvluchten - ASK-23',
+		requirements: [
+			crossCountryCommonRequirements.SPL,
+			crossCountryCommonRequirements.twoHourFlights,
+			crossCountryCommonRequirements.recentFlights,
+			{
+				name: crossCountryCommonRequirements.recentTypeStarts.name,
+				goal: crossCountryCommonRequirements.recentTypeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, ['ASK-23'])
+			},
+			{
+				name: crossCountryCommonRequirements.typeStarts.name,
+				goal: crossCountryCommonRequirements.typeStarts.goal,
+				calculate: (stats) => crossCountryCommonRequirements.typeStarts.calculate(stats, ['ASK-23'])
+			},
+			crossCountryCommonRequirements.threeGoodLandings,
+			crossCountryCommonRequirements.overlandBriefing,
+			crossCountryCommonRequirements.DDIPermission,
+			{
+				name: 'Solo overland als onderdeel van SPL-opleiding: EVO, VVO1 en VVO2 syllabus volledig afgerond'
+			},
+			{
+				name: 'Solo overland als onderdeel van SPL-opleiding: 5 opeenvolgende doellandingen op ASK-23',
+				goal: 5
+			},
+			{
+				name: 'Solo overland als onderdeel van SPL-opleiding: In bezit van "solo overland verklaring" getekend door instructeur'
+			}
+		]
+	},
+	{
+		name: 'Overlandvluchten - LS-4b',
+		requirements: [
+			crossCountryCommonRequirements.SPL,
+			crossCountryCommonRequirements.twoHourFlights,
+			crossCountryCommonRequirements.recentFlights,
+			{
+				name: crossCountryCommonRequirements.recentTypeStarts.name,
+				goal: crossCountryCommonRequirements.recentTypeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, commonTypes.ls4)
+			},
+			{
+				name: crossCountryCommonRequirements.typeStarts.name,
+				goal: crossCountryCommonRequirements.typeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.typeStarts.calculate(stats, commonTypes.ls4)
+			},
+			crossCountryCommonRequirements.threeGoodLandings,
+			crossCountryCommonRequirements.overlandBriefing,
+			crossCountryCommonRequirements.DDIPermission,
+			{
+				name: 'Tenminste 2 overlandvluchten',
+				goal: 2,
+				calculate: (stats) => {
+					return stats.xcountryFlights.length;
+				}
+			}
+		]
+	},
+	{
+		name: 'Overlandvluchten - LS-8',
+		requirements: [
+			crossCountryCommonRequirements.SPL,
+			crossCountryCommonRequirements.twoHourFlights,
+			crossCountryCommonRequirements.recentFlights,
+			{
+				name: crossCountryCommonRequirements.recentTypeStarts.name,
+				goal: crossCountryCommonRequirements.recentTypeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, commonTypes.ls8)
+			},
+			{
+				name: crossCountryCommonRequirements.typeStarts.name,
+				goal: crossCountryCommonRequirements.typeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.typeStarts.calculate(stats, commonTypes.ls8)
+			},
+			crossCountryCommonRequirements.threeGoodLandings,
+			crossCountryCommonRequirements.overlandBriefing,
+			crossCountryCommonRequirements.DDIPermission,
+			{
+				name: 'Tenminste 2 overlandvluchten',
+				goal: 2,
+				calculate: (stats) => {
+					return stats.xcountryFlights.length;
+				}
+			}
+		]
+	},
+	{
+		name: 'Overlandvluchten - ASW-27',
+		requirements: [
+			crossCountryCommonRequirements.SPL,
+			crossCountryCommonRequirements.twoHourFlights,
+			crossCountryCommonRequirements.recentFlights,
+			{
+				name: crossCountryCommonRequirements.recentTypeStarts.name,
+				goal: crossCountryCommonRequirements.recentTypeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, ['ASW-27'])
+			},
+			{
+				name: crossCountryCommonRequirements.typeStarts.name,
+				goal: crossCountryCommonRequirements.typeStarts.goal,
+				calculate: (stats) => crossCountryCommonRequirements.typeStarts.calculate(stats, ['ASW-27'])
+			},
+			crossCountryCommonRequirements.threeGoodLandings,
+			crossCountryCommonRequirements.overlandBriefing,
+			crossCountryCommonRequirements.DDIPermission,
+			{
+				name: '4 overlandvluchten',
+				goal: 4,
+				calculate: (stats) => {
+					return stats.xcountryFlights.length;
+				}
+			},
+			{
+				name: 'Minimaal 2 overlandvluchten van tenminste 200 kilometer'
+			},
+			{
+				name: 'Tenminste 2 van deze overlandvluchten op LS-4b/LS-8 of gelijkwaardig type',
+				goal: 2,
+				calculate: (stats) => {
+					const relevantFlights = stats.xcountryFlights.filter((flight) =>
+						[...commonTypes.ls4, ...commonTypes.ls8].includes(flight.type || '')
+					);
+					return relevantFlights.length;
+				}
+			}
+		]
+	},
+	{
+		name: 'Overlandvluchten - ASG-29E',
+		requirements: [
+			crossCountryCommonRequirements.SPL,
+			crossCountryCommonRequirements.twoHourFlights,
+			crossCountryCommonRequirements.recentFlights,
+			{
+				name: crossCountryCommonRequirements.recentTypeStarts.name,
+				goal: crossCountryCommonRequirements.recentTypeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, ['ASG-29E', 'ASG-29'])
+			},
+			{
+				name: crossCountryCommonRequirements.typeStarts.name,
+				goal: crossCountryCommonRequirements.typeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.typeStarts.calculate(stats, ['ASG-29E', 'ASG-29'])
+			},
+			crossCountryCommonRequirements.threeGoodLandings,
+			crossCountryCommonRequirements.overlandBriefing,
+			crossCountryCommonRequirements.DDIPermission,
+			{
+				name: '10 overlandvluchten',
+				goal: 10,
+				calculate: (stats) => stats.xcountryFlightsCount
+			},
+			{
+				name: 'Minimaal 3 overlandvluchten van tenminste 200 kilometer'
+			},
+			{
+				name: 'Tenminste 1 van deze overlandvluchten op ASW-27 of gelijkwaardig type',
+				goal: 1,
+				calculate: (stats) => {
+					const relevantFlights = stats.xcountryFlights.filter(
+						(flight) => flight.type === 'ASW-27'
+					);
+					return relevantFlights.length;
+				}
+			},
+			{
+				name: 'Bevoegd verklaring in ACvZ.zweef.app met toestemming voor motorgebruik ASG-29E'
+			}
+		]
+	},
+	{
+		name: 'Overlandvluchten - ASK-21',
+		requirements: [
+			crossCountryCommonRequirements.SPL,
+			crossCountryCommonRequirements.twoHourFlights,
+			crossCountryCommonRequirements.recentFlights,
+			{
+				name: crossCountryCommonRequirements.recentTypeStarts.name,
+				goal: crossCountryCommonRequirements.recentTypeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, commonTypes.ask21)
+			},
+			{
+				name: crossCountryCommonRequirements.typeStarts.name,
+				goal: crossCountryCommonRequirements.typeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.typeStarts.calculate(stats, commonTypes.ask21)
+			},
+			crossCountryCommonRequirements.threeGoodLandings,
+			crossCountryCommonRequirements.overlandBriefing,
+			crossCountryCommonRequirements.DDIPermission,
+			{
+				name: 'Bevoegd verklaring in ACvZ.zweef.app met toestemming van instructeur'
+			},
+			{
+				name: '4 overlandvluchten',
+				goal: 4,
+				calculate: (stats) => {
+					return stats.xcountryFlights.length;
+				}
+			},
+			{
+				name: 'Minimaal 2 overlandvluchten van tenminste 200 kilometer'
+			},
+			{
+				name: 'Tenminste 2 van deze overlandvluchten op LS-4b/LS-8 of gelijkwaardig type',
+				goal: 2,
+				calculate: (stats) => {
+					const relevantFlights = stats.xcountryFlights.filter((flight) =>
+						[...commonTypes.ls4, ...commonTypes.ls8].includes(flight.type || '')
+					);
+					return relevantFlights.length;
+				}
+			}
+		]
+	},
+	{
+		name: 'Overlandvluchten - Duo Discus',
+		requirements: [
+			crossCountryCommonRequirements.SPL,
+			crossCountryCommonRequirements.twoHourFlights,
+			crossCountryCommonRequirements.recentFlights,
+			{
+				name: crossCountryCommonRequirements.recentTypeStarts.name,
+				goal: crossCountryCommonRequirements.recentTypeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, commonTypes.duo)
+			},
+			{
+				name: crossCountryCommonRequirements.typeStarts.name,
+				goal: crossCountryCommonRequirements.typeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.typeStarts.calculate(stats, commonTypes.duo)
+			},
+			crossCountryCommonRequirements.threeGoodLandings,
+			crossCountryCommonRequirements.overlandBriefing,
+			crossCountryCommonRequirements.DDIPermission,
+			{
+				name: 'Bevoegd verklaring in ACvZ.zweef.app met toestemming van instructeur'
+			},
+			{
+				name: '10 overlandvluchten',
+				goal: 10,
+				calculate: (stats) => stats.xcountryFlightsCount
+			},
+			{
+				name: 'Minimaal 4 overlandvluchten van tenminste 200 kilometer'
+			},
+			{
+				name: 'Minimaal 2 buitenlandingen',
+				goal: 2,
+				calculate: (stats) => stats.outlandings.length
+			},
+			{
+				name: 'Bevoegd verklaring in ACvZ.zweef.app met toestemming voor motorgebruik in geval van de Duo Discus XLT'
+			}
+		]
+	},
+	{
+		name: 'Overlandvluchten - Prefect PH-192',
+		requirements: [
+			crossCountryCommonRequirements.SPL,
+			crossCountryCommonRequirements.twoHourFlights,
+			crossCountryCommonRequirements.recentFlights,
+			{
+				name: crossCountryCommonRequirements.recentTypeStarts.name,
+				goal: crossCountryCommonRequirements.recentTypeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, ['Prefect', 'PH-192'])
+			},
+			{
+				name: crossCountryCommonRequirements.typeStarts.name,
+				goal: crossCountryCommonRequirements.typeStarts.goal,
+				calculate: (stats) =>
+					crossCountryCommonRequirements.typeStarts.calculate(stats, ['Prefect', 'PH-192'])
+			},
+			crossCountryCommonRequirements.threeGoodLandings,
+			crossCountryCommonRequirements.overlandBriefing,
+			crossCountryCommonRequirements.DDIPermission,
+			{
+				name: '4 overlandvluchten',
+				goal: 4,
+				calculate: (stats) => {
+					return stats.xcountryFlights.length;
+				}
+			},
+			{
+				name: 'Minimaal 2 overlandvluchten van tenminste 200 kilometer'
 			}
 		]
 	}
