@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.0](https://github.com/florisporro/zweefstats/compare/v1.3.0...v1.4.0) (2025-03-19)
+
+
+### Features
+
+* FI vluchten apart weergegeven in tabellen en overzichten (voor onze instructeurs) ([24d6182](https://github.com/florisporro/zweefstats/commit/24d618253cf4f9f126c3b10b1041d1f3d660ea4b))
+* Overlandeisen per type toegevoegd aan de ACvZ bevoegdhedenmatrix ([3169d8a](https://github.com/florisporro/zweefstats/commit/3169d8abb6d0ecaded675816dce21b0a0f3761f5))
+* Tonen / verbergen van data over verschillende soorten vluchten ([48e9617](https://github.com/florisporro/zweefstats/commit/48e9617061ab575ae8dbda38a790a88fdd384dd9))
+
+
+### Bug Fixes
+
+* Code is voorbereid op aankomende switch naar Engelstalige database ([2d8fd74](https://github.com/florisporro/zweefstats/commit/2d8fd74878e4bd6ac457e4f37e0138b34e966dbf))
+* Update van de ACvZ bevoegdhedenmatrix ([588c76e](https://github.com/florisporro/zweefstats/commit/588c76eba34f28f0b5863cc8986bd4e3023d084d))
+
 ## [1.3.0](https://github.com/florisporro/zweefstats/compare/v1.2.0...v1.3.0) (2023-04-15)
 
 
