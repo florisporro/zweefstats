@@ -86,7 +86,7 @@ export function formatTime(time: number) {
 	return `${hours} uur en ${minutes} minuten`;
 }
 
-export function getTimes(data: DutchFlight[], pilot: string): Times {
+export function getTimes(data: DutchFlight[], pilot: string, pilotId: number | null = null): Times {
 	// Find all flights where pilot was PIC
 	const picFlights = data.filter((a) => a.gezagvoerder_naam === pilot);
 
@@ -118,16 +118,22 @@ export function getTimes(data: DutchFlight[], pilot: string): Times {
 	const paxTimeFormatted = formatTime(paxTime);
 	const instructorTimeFormatted = formatTime(instructorTime);
 
-	// Find all xcountry flights for pilot
-	const xcountryFlights = picFlights.filter((a) => {
-		// Check for overland and has a valid flight duration greater than 33 minutes
-		return a.is_overland === true && typeof a.vluchtduur === 'number' && a.vluchtduur > 33;
+	// Find all xcountry flights paid for by the pilot
+	const xcountryFlights = data.filter((a) => {
+		// Check if the pilot was PIC or the paying member, and it's overland with valid flight duration > 33 minutes
+		return (a.gezagvoerder_naam === pilot || (pilotId !== null && a.betalend_lid_id === pilotId)) && 
+			a.is_overland === true && 
+			typeof a.vluchtduur === 'number' && 
+			a.vluchtduur > 33;
 	});
 
-	// Find all xcountry attempts flights for pilot
-	const xcountryattemptFlights = picFlights.filter((a) => {
-		// Check for overland and has a valid flight duration less than 33 minutes
-		return a.is_overland === true && typeof a.vluchtduur === 'number' && a.vluchtduur < 33;
+	// Find all xcountry attempts flights paid for by the pilot
+	const xcountryattemptFlights = data.filter((a) => {
+		// Check if the pilot was PIC or the paying member, and it's overland with valid flight duration < 33 minutes
+		return (a.gezagvoerder_naam === pilot || (pilotId !== null && a.betalend_lid_id === pilotId)) && 
+			a.is_overland === true && 
+			typeof a.vluchtduur === 'number' && 
+			a.vluchtduur < 33;
 	});
 
 	return {
@@ -188,7 +194,7 @@ export function getStatistics(data: DutchFlight[]): Stats {
 	// Explicitly make pilotId either a number or null
 	const pilotId: number | null = data.find((a) => a.gezagvoerder_naam === pilot)?.gezagvoerder_id || null;
 
-	const complete = getTimes(data, pilot);
+	const complete = getTimes(data, pilot, pilotId);
 
 	// Find all flights where arrival airfield was buitenlanding
 	const outlandings = data.filter((a) => a.aankomst_vliegveld !== a.vertrek_vliegveld);
@@ -200,7 +206,7 @@ export function getStatistics(data: DutchFlight[]): Stats {
 	const lastExamIndex = examFlights.length > 0 ? data.indexOf(examFlights[0]) : -1;
 	const flightsAfterExam = lastExamIndex >= 0 ? data.slice(0, lastExamIndex) : [];
 
-	const timesAfterExam = getTimes(flightsAfterExam, pilot);
+	const timesAfterExam = getTimes(flightsAfterExam, pilot, pilotId);
 
 	// Get flights by date
 	const dates = getUnique(data, 'datum');
@@ -208,7 +214,7 @@ export function getStatistics(data: DutchFlight[]): Stats {
 	for (const date of dates) {
 		if (typeof date === 'string' || typeof date === 'number') {
 			const flightsThisDate = data.filter((a) => a.datum === date);
-			flightsByDate[date] = getTimes(flightsThisDate, pilot);
+			flightsByDate[date] = getTimes(flightsThisDate, pilot, pilotId);
 		}
 	}
 
@@ -223,7 +229,7 @@ export function getStatistics(data: DutchFlight[]): Stats {
 	for (const year of years) {
 		if (typeof year === 'string' || typeof year === 'number') {
 			const flightsThisYear = data.filter((a) => a.year === year);
-			flightsByYear[year] = getTimes(flightsThisYear, pilot);
+			flightsByYear[year] = getTimes(flightsThisYear, pilot, pilotId);
 		}
 	}
 
@@ -238,7 +244,7 @@ export function getStatistics(data: DutchFlight[]): Stats {
 	for (const airplane of airplanes) {
 		if (typeof airplane === 'string') {
 			const flightsThisType = data.filter((a) => a.type === airplane);
-			flightsByAirplane[airplane] = getTimes(flightsThisType, pilot);
+			flightsByAirplane[airplane] = getTimes(flightsThisType, pilot, pilotId);
 		}
 	}
 
@@ -249,7 +255,7 @@ export function getStatistics(data: DutchFlight[]): Stats {
 	for (const launchMethod of launchMethods) {
 		if (typeof launchMethod === 'string') {
 			const flightsThisType = data.filter((a) => a.start_methode === launchMethod);
-			flightsByLaunchMethod[launchMethod] = getTimes(flightsThisType, pilot);
+			flightsByLaunchMethod[launchMethod] = getTimes(flightsThisType, pilot, pilotId);
 		}
 	}
 
@@ -260,7 +266,7 @@ export function getStatistics(data: DutchFlight[]): Stats {
 	for (const airfield of airfields) {
 		if (typeof airfield === 'string') {
 			const flightsThisAirfield = data.filter((a) => a.vertrek_vliegveld === airfield);
-			flightsByAirfield[airfield] = getTimes(flightsThisAirfield, pilot);
+			flightsByAirfield[airfield] = getTimes(flightsThisAirfield, pilot, pilotId);
 		}
 	}
 
