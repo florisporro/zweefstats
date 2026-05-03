@@ -2,9 +2,10 @@ import type { Permission } from '../permissions';
 
 const commonTypes = {
 	ask21: ['ASK-21', 'ASK-21(B)'],
+	ask23: ['ASK-23', 'ASK-23B'],
 	tweezitters: ['ASK-21', 'ASK-21(B)', 'K-13', 'K-7'],
 	duo: ['Duo Discus', 'Duo Discus T', 'Duo Discus XLT'],
-	ls4: ['LS-4', 'LS4', 'LS-4a', 'LS-4b'],
+	ls4: ['LS-4', 'LS4', 'LS-4a', 'LS-4b', 'LS 4-b'],
 	ls8: ['LS-8', 'LS8', 'LS-8a', 'LS-8b']
 };
 
@@ -367,12 +368,12 @@ const config: Permission[] = [
 				name: crossCountryCommonRequirements.recentTypeStarts.name,
 				goal: crossCountryCommonRequirements.recentTypeStarts.goal,
 				calculate: (stats) =>
-					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, ['ASK-23'])
+					crossCountryCommonRequirements.recentTypeStarts.calculate(stats, commonTypes.ask23)
 			},
 			{
 				name: crossCountryCommonRequirements.typeStarts.name,
 				goal: crossCountryCommonRequirements.typeStarts.goal,
-				calculate: (stats) => crossCountryCommonRequirements.typeStarts.calculate(stats, ['ASK-23'])
+				calculate: (stats) => crossCountryCommonRequirements.typeStarts.calculate(stats, commonTypes.ask23)
 			},
 			crossCountryCommonRequirements.threeGoodLandings,
 			crossCountryCommonRequirements.overlandBriefing,
