@@ -201,6 +201,47 @@ const config: Permission[] = [
 		]
 	},
 	{
+		name: 'Arcus T',
+		requirements: [
+			commonRequirements.SPL,
+			{
+				name: '80 vlieguren als gezagvoerder na het behalen van het LAPL/SPL',
+				goal: 80,
+				calculate: (stats) => stats.timesAfterExam.picTime / 60
+			},
+			{
+				name: 'Tenminste 100 starts op de LS-8 / Duo Discus (XLT) /ASW-27 of gelijkwaardig type',
+				goal: 100,
+				calculate: (stats) => totalStartCount(stats, [...commonTypes.ls4, ...commonTypes.ls8, ...commonTypes.duo, ['ASW-27']])
+			},
+			{
+				name: 'Tenminste 20 starts op de Duo Discus (XLT)',
+				goal: 20,
+				calculate: (stats) => totalStartCount(stats, [...commonTypes.duo])
+			},
+			{
+				name: 'Tenminste 20 starts op de ASW-27 en/of ASG29',
+				goal: 20,
+				calculate: (stats) => totalStartCount(stats, ['ASW-27', 'ASG-29'])
+			},
+			{
+				name: 'D-brevet'
+			},
+			{
+				name: 'Sleepaantekening'
+			},
+			{
+				name: 'Een goede overles starts op de Arcus T met door de club daartoe aangewezen instructeur.'
+			},
+			{
+				name: 'Twee goede checkvluchten op de Arcus T met door de club daartoe aangewezen instructeurs. Een van deze starts dient een sleepstart te zijn.'
+			},
+			{
+				name: 'Minimaal 1 Arcus PIC/DBO vlucht in de afgelopen 90 dagen.'
+			}
+		]
+	},
+	{
 		name: 'ASW-27',
 		requirements: [
 			commonRequirements.SPL,
@@ -332,7 +373,7 @@ const config: Permission[] = [
 		]
 	},
 	{
-		name: 'Motor gebruik ASW-29 Duo Discus',
+		name: 'Motor gebruik DuoDiscus XLT en Arcus T',
 		requirements: [
 			commonRequirements.SPL,
 			{
@@ -349,10 +390,7 @@ const config: Permission[] = [
 				name: 'Theorie cursus club gevolgd'
 			},
 			{
-				name: 'Twee goede instructie / examen starts op de Duo Discus XLT met verschillende door de club daartoe aangewezen instructeurs.'
-			},
-			{
-				name: 'Voor toestemming voor het motorgebruik van de ASG-29E is een aparte overlesbriefing door een daartoe aangewezen instructeur voor het motorgebruik van de ASG-29E vereist.'
+				name: 'Twee goede instructie / examen starts op de Duo Discus XLT of Arcus T met verschillende door de club daartoe aangewezen instructeurs.'
 			}
 		]
 	},
