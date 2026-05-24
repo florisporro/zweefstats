@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/florisporro/zweefstats/compare/v1.4.0...v1.4.1) (2025-03-27)
+
+
+### Bug Fixes
+
+* In 'overland' sectie zie je nu ook instructie overlands ([2d102ad](https://github.com/florisporro/zweefstats/commit/2d102adf03397330d6b7e47f109593e4aae7bd6f))
+
 ## [1.4.0](https://github.com/florisporro/zweefstats/compare/v1.3.0...v1.4.0) (2025-03-19)
 
 
