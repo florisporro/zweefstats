@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/florisporro/zweefstats/compare/v1.4.1...v1.5.0) (2026-05-24)
+
+
+### Features
+
+* Mogelijkheid om examendata handmatig in te stellen ([abf95ca](https://github.com/florisporro/zweefstats/commit/abf95ca57f8bf6d3c6fbedd8fddff71df95d3b41))
+
 ## [1.4.1](https://github.com/florisporro/zweefstats/compare/v1.4.0...v1.4.1) (2025-03-27)
 
 
