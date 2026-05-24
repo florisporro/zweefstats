@@ -179,7 +179,7 @@ function averageFlightProperty(property: string, timesObject: FlightsBy): number
 	return filteredArray.reduce((a, b) => a + b, 0) / filteredArray.length;
 }
 
-export function getStatistics(data: DutchFlight[]): Stats {
+export function getStatistics(data: DutchFlight[], examDateOverride?: string): Stats {
 	// Find the most likely name of the pilot
 	const pilots: string[] = [
 		...data.map((a) => (typeof a.gezagvoerder_naam === 'string' ? a.gezagvoerder_naam : '')),
@@ -202,9 +202,26 @@ export function getStatistics(data: DutchFlight[]): Stats {
 	// Find all exam flights
 	const examFlights = data.filter((a) => a.is_examen);
 
-	// Get all flights after the last exam flights
-	const lastExamIndex = examFlights.length > 0 ? data.indexOf(examFlights[0]) : -1;
-	const flightsAfterExam = lastExamIndex >= 0 ? data.slice(0, lastExamIndex) : [];
+	// Get all flights after the exam: prefer manual override date if provided,
+	// otherwise fall back to the first detected is_examen flight.
+	const overrideDate =
+		examDateOverride && !isNaN(new Date(examDateOverride).getTime())
+			? new Date(examDateOverride)
+			: null;
+
+	let lastExamIndex: number;
+	let flightsAfterExam: DutchFlight[];
+	if (overrideDate) {
+		lastExamIndex = -1;
+		flightsAfterExam = data.filter((f) => {
+			if (!f.datum) return false;
+			const d = new Date(f.datum as string);
+			return !isNaN(d.getTime()) && d > overrideDate;
+		});
+	} else {
+		lastExamIndex = examFlights.length > 0 ? data.indexOf(examFlights[0]) : -1;
+		flightsAfterExam = lastExamIndex >= 0 ? data.slice(0, lastExamIndex) : [];
+	}
 
 	const timesAfterExam = getTimes(flightsAfterExam, pilot, pilotId);
 
@@ -301,6 +318,7 @@ export function getStatistics(data: DutchFlight[]): Stats {
 		examFlights,
 		lastExamIndex,
 		flightsAfterExam,
-		timesAfterExam
+		timesAfterExam,
+		examDateOverride: overrideDate ? examDateOverride : undefined
 	};
 }

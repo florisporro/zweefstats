@@ -139,4 +139,5 @@ declare interface Stats extends Times {
 	examFlights: Flight[];
 	lastExamIndex: number;
 	flightsAfterExam: Flight[];
+	examDateOverride?: string;
 }

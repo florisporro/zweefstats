@@ -97,11 +97,24 @@
 	const sessionStorageValue = sessionStorage.getItem('zweefapp');
 	const parsedsessionStorage = sessionStorageValue ? JSON.parse(sessionStorageValue) : null;
 	let selectedClub = parsedsessionStorage ? parsedsessionStorage.club.toLowerCase() : '';
+	let examDateOverride: string = parsedsessionStorage?.examDateOverride ?? '';
 
 	$: console.log({ selectedClub });
 
-	$: statistics = getStatistics(data);
+	$: statistics = getStatistics(data, examDateOverride || undefined);
 	$: console.log(statistics);
+
+	$: {
+		// Persist the exam date override in sessionStorage alongside existing settings.
+		const current = sessionStorage.getItem('zweefapp');
+		const parsed = current ? JSON.parse(current) : {};
+		if (examDateOverride) {
+			parsed.examDateOverride = examDateOverride;
+		} else {
+			delete parsed.examDateOverride;
+		}
+		sessionStorage.setItem('zweefapp', JSON.stringify(parsed));
+	}
 
 	function handleKeydown(event: any) {
 		if (event.key === 'Escape') {
@@ -449,16 +462,40 @@
 </div>
 
 {#if expandedSections.examInfo}
+	<div class="md:w-2/3 mx-auto mb-4 p-4 bg-base-200 rounded-lg">
+		<label class="block text-sm font-medium mb-1" for="examDateOverride">
+			Examen datum handmatig instellen (optioneel)
+		</label>
+		<div class="flex items-center gap-2">
+			<input
+				id="examDateOverride"
+				type="date"
+				class="input input-bordered input-sm"
+				bind:value={examDateOverride}
+			/>
+			{#if examDateOverride}
+				<button class="btn btn-sm btn-ghost" on:click={() => (examDateOverride = '')}>Wis</button>
+			{/if}
+		</div>
+		<p class="text-xs text-slate-500 mt-1">
+			Gebruik dit als je examen datum niet correct uit het logboek wordt gehaald.
+		</p>
+	</div>
 	<section class="statscontainer segment transition-all duration-300">
-		{#if statistics.examFlights.length > 0}
-			<SingleValueCard name="Examen vluchten">
-				<a
-					href={'#'}
-					on:click|preventDefault={() => {
-						inspectFlights = statistics.examFlights;
-					}}>{statistics.examFlights.length}</a
-				>
-			</SingleValueCard>
+		{#if statistics.examFlights.length > 0 || examDateOverride}
+			{#if statistics.examFlights.length > 0}
+				<SingleValueCard name="Examen vluchten">
+					<a
+						href={'#'}
+						on:click|preventDefault={() => {
+							inspectFlights = statistics.examFlights;
+						}}>{statistics.examFlights.length}</a
+					>
+				</SingleValueCard>
+			{/if}
+			{#if examDateOverride}
+				<SingleValueCard name="Examen datum (handmatig)">{examDateOverride}</SingleValueCard>
+			{/if}
 			<SingleValueCard name="Examen gehaald">{statistics.hasLicense ? '✅' : '❌'}</SingleValueCard>
 			
 			{#if displayFilters.showTotal}
