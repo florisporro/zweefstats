@@ -48,6 +48,25 @@ describe('mergeFresh', () => {
 });
 
 describe('compileAverages', () => {
+	it('skips a record carrying no flight array instead of throwing', () => {
+		// A record shaped like this in production froze the national statistics:
+		// every rebuild threw, so nothing was ever written back.
+		const junk = { key: 'flights junk', crawler_config: {}, urls: [] } as unknown as FlightData;
+
+		const stats = compileAverages([junk, record('1 Pilot', [flight('a')])]);
+
+		expect(stats.pilots).toBe(1);
+		expect(stats.flightsCount).toBe(1);
+	});
+
+	it('survives a record whose data is present but not an array', () => {
+		const broken = record('1 Pilot', []) as FlightData;
+		(broken as unknown as { data: unknown }).data = 'nope';
+
+		expect(() => compileAverages([broken])).not.toThrow();
+		expect(compileAverages([broken]).pilots).toBe(0);
+	});
+
 	it('counts pilots and flights across every shared logbook', () => {
 		const stats = compileAverages([
 			record('1 Pilot', [flight('a'), flight('b')]),

@@ -23,11 +23,22 @@ function averageArray(array: number[]) {
 	return sanitizedArray.reduce((a, b) => Number(a) + Number(b), 0) / array.length;
 }
 
-export function compileAverages(data: FlightData[]): NationalStatistics {
-	// Process all the data into our statistics object
-	const stats = data.map((a) => getStatistics(a.data));
+/**
+ * A shared record is only usable if it actually carries a flight array. One
+ * malformed entry used to throw here and take the whole rebuild down with it,
+ * which silently froze the national statistics.
+ */
+function isUsable(record: FlightData): boolean {
+	return Array.isArray(record?.data);
+}
 
-	const pilots = data.length;
+export function compileAverages(data: FlightData[]): NationalStatistics {
+	const usable = data.filter(isUsable);
+
+	// Process all the data into our statistics object
+	const stats = usable.map((a) => getStatistics(a.data));
+
+	const pilots = usable.length;
 	const flightsCount = sumTotal(stats.map((a) => a.flights.length));
 	const picFlightsCount = sumTotal(stats.map((a) => a.picFlights.length));
 	const dboFlightsCount = sumTotal(stats.map((a) => a.dboFlights.length));
