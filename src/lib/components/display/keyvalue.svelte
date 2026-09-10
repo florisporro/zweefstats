@@ -5,18 +5,23 @@
 		};
 	}
 
-	export let data: KeyValueData = {};
-	export let display: { key: string; name: string }[] = [];
-	export let itemName: string = 'Item';
-	export let inspectFlights: Flight[];
+	interface Props {
+		data?: KeyValueData;
+		display?: { key: string; name: string }[];
+		itemName?: string;
+		inspectFlights: Flight[];
+	}
+
+	let {
+		data = {},
+		display = [],
+		itemName = 'Item',
+		inspectFlights = $bindable()
+	}: Props = $props();
 
 	function handleInspect(flights: Flight[]) {
 		inspectFlights = flights;
 	}
-
-	let cols = 'grid-cols-4';
-
-	$: cols = `grid-cols-${display.length + 1}`;
 </script>
 
 <div class="overflow-x-auto">
@@ -24,25 +29,27 @@
 		<thead class="font-bold text-left">
 			<tr>
 				<th>{itemName}</th>
-				{#each display as key}
+				{#each display as key (key.key)}
 					<th>{key.name}</th>
 				{/each}
 			</tr>
 		</thead>
 		<tbody>
-			{#each Object.entries(data) as [key, value]}
+			{#each Object.entries(data) as [key, value] (key)}
 				<tr>
 					<td>
-						<a
-							href={'#'}
-							on:click|preventDefault={() => {
+						<button
+							type="button"
+							class="linkbutton"
+							onclick={(e) => {
+								e.preventDefault();
 								handleInspect(value.flights);
 							}}
 						>
 							{key}
-						</a>
+						</button>
 					</td>
-					{#each display as key}
+					{#each display as key (key.key)}
 						<td>{value[key.key]}</td>
 					{/each}
 				</tr>

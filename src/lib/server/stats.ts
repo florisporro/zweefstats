@@ -1,6 +1,6 @@
-import { getStatistics, formatTime } from '../lib/stats';
+import { getStatistics, formatTime } from '../stats';
 
-interface FlightData {
+export interface FlightData {
 	key: string;
 	pilot: string;
 	pilotId: number;
@@ -8,39 +8,9 @@ interface FlightData {
 	data: DutchFlight[];
 }
 
-interface NationalStatistics {
-	pilots: number;
-	flightsCount: number;
-	picFlightsCount: number;
-	dboFlightsCount: number;
-	paxFlightsCount: number;
-	totalTime: number;
-	totalTimeFormatted: string;
-	picTime: number;
-	picTimeFormatted: string;
-	dboTime: number;
-	dboTimeFormatted: string;
-	paxTime: number;
-	paxTimeFormatted: string;
-	averageFlightsPerDay: number;
-	averagePicFlightsPerDay: number;
-	averageDboFlightsPerDay: number;
-	averageMinutesPerDay: number;
-	averageStartsYear: number;
-	averagePicStartsYear: number;
-	averageMinutesYear: number;
-}
-
 // Sums all the values in an array
 function sumTotal(array: number[]) {
 	return array.reduce((partialSum, a) => partialSum + a, 0);
-}
-
-// Sums all the values of an array of objects with a number key
-function sumField(array: { [key: string]: number }[], field: string) {
-	const fieldArray = array.map((a) => Number(a[field]));
-	const sum = sumTotal(fieldArray);
-	return sum;
 }
 
 // Gets an average of all the values in an array
@@ -101,4 +71,57 @@ export function compileAverages(data: FlightData[]): NationalStatistics {
 		averagePicStartsYear,
 		averageMinutesYear
 	};
+}
+
+const FLIGHTS_PREFIX = 'flights ';
+const STATS_KEY = 'stats';
+const UPDATED_AT_KEY = 'statsUpdatedAt';
+
+// ponytail: time-debounce, switch to a queue if writes get bursty
+const MIN_RECOMPUTE_INTERVAL_MS = 15 * 60 * 1000;
+
+/**
+ * KV reads are eventually consistent, so a record written moments ago may be
+ * missing from a listing, or come back stale. Override by key.
+ */
+export function mergeFresh(records: FlightData[], fresh: FlightData): FlightData[] {
+	return [...records.filter((record) => record.key !== fresh.key), fresh];
+}
+
+async function listAllFlightData(kv: KVNamespace): Promise<FlightData[]> {
+	const names: string[] = [];
+	let cursor: string | undefined;
+
+	for (;;) {
+		const page = await kv.list({ prefix: FLIGHTS_PREFIX, cursor });
+		names.push(...page.keys.map((key) => key.name));
+		if (page.list_complete) break;
+		cursor = page.cursor;
+	}
+
+	const records = await Promise.all(names.map((name) => kv.get<FlightData>(name, 'json')));
+	return records.filter((record): record is FlightData => record !== null);
+}
+
+export function readNationalStats(kv: KVNamespace): Promise<string | null> {
+	return kv.get(STATS_KEY);
+}
+
+export function saveFlightData(kv: KVNamespace, record: FlightData): Promise<void> {
+	return kv.put(FLIGHTS_PREFIX + record.key, JSON.stringify(record));
+}
+
+/**
+ * Rebuilds the cached national statistics from every shared logbook. Runs on
+ * write rather than on a schedule, so it is debounced against write bursts.
+ */
+export async function recomputeNationalStats(kv: KVNamespace, fresh?: FlightData): Promise<void> {
+	const lastRun = Number((await kv.get(UPDATED_AT_KEY)) ?? 0);
+	if (Date.now() - lastRun < MIN_RECOMPUTE_INTERVAL_MS) return;
+
+	const records = await listAllFlightData(kv);
+	const stats = compileAverages(fresh ? mergeFresh(records, fresh) : records);
+
+	await kv.put(STATS_KEY, JSON.stringify(stats));
+	await kv.put(UPDATED_AT_KEY, String(Date.now()));
 }

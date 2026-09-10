@@ -15,9 +15,9 @@ function standardizeToDutch(flight: Flight): DutchFlight {
 	if (!isEnglishFlight(flight)) {
 		return flight as DutchFlight; // Already in Dutch format
 	}
-	
+
 	const englishFlight = flight as EnglishFlight;
-	
+
 	// Create a new Dutch flight object
 	const dutchFlight = {
 		uuid: englishFlight.uuid,
@@ -55,24 +55,24 @@ function standardizeToDutch(flight: Flight): DutchFlight {
 		bijzonderheden: englishFlight.remarks,
 		notitie: englishFlight.notes
 	} as DutchFlight;
-	
+
 	return dutchFlight;
 }
 
 export function sanitizeData(results: Flight[]): DutchFlight[] {
 	const data: DutchFlight[] = [];
 	console.log(`Sanitizing ${results.length} rows...`);
-	
+
 	// Log first row to see the raw format
 	if (results.length > 0) {
 		console.log('First row example:', results[0]);
 	}
-	
+
 	results.forEach((originalRow: Flight, index) => {
 		try {
 			// Standardize to Dutch format
 			const row = standardizeToDutch(originalRow);
-			
+
 			// Check if all required fields exist
 			if (!row.datum) {
 				console.error(`Row ${index} missing date field:`, row);
@@ -86,28 +86,28 @@ export function sanitizeData(results: Flight[]): DutchFlight[] {
 			row.is_examen = convertToBoolean(row.is_examen);
 			row.is_profcheck = convertToBoolean(row.is_profcheck);
 			row.is_overland = convertToBoolean(row.is_overland);
-			
+
 			// Check if datum is in expected format
 			if (row.datum && typeof row.datum === 'string' && row.datum.split('-').length !== 3) {
 				console.error(`Row ${index} has invalid date format:`, row.datum);
 			}
-			
+
 			// Ensure year is set
 			if (!row.year && row.datum && typeof row.datum === 'string') {
 				row.year = Number(row.datum.split('-')[0]);
 			}
-			
+
 			// Ensure vluchtduur is a number
 			if (row.vluchtduur !== undefined && isNaN(Number(row.vluchtduur))) {
 				console.error(`Row ${index} has invalid vluchtduur:`, row.vluchtduur);
 			} else if (row.vluchtduur !== undefined) {
 				row.vluchtduur = Number(row.vluchtduur);
 			}
-			
+
 			// Ensure required fields aren't undefined but null instead
 			if (row.tweede_inzittende_naam === undefined) row.tweede_inzittende_naam = null;
 			if (row.tweede_inzittende_id === undefined) row.tweede_inzittende_id = null;
-			
+
 			// If this is one of the first rows, log it for debugging
 			if (index < 3) {
 				console.log(`Sanitized row ${index}:`, {
@@ -121,14 +121,14 @@ export function sanitizeData(results: Flight[]): DutchFlight[] {
 					tweede_inzittende_naam: row.tweede_inzittende_naam
 				});
 			}
-			
+
 			data.push(row);
 		} catch (error) {
 			console.error(`Error in row ${index}:`, originalRow);
 			console.error(error);
 		}
 	});
-	
+
 	console.log(`Successfully processed ${data.length} out of ${results.length} rows`);
 	return data;
 }

@@ -1,0 +1,21 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "zweefstats-web",
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"compatibility_date": "2026-09-10",
+	"compatibility_flags": ["nodejs_compat"],
+	"assets": {
+		"directory": ".svelte-kit/cloudflare",
+		"binding": "ASSETS"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "zweefstats",
+			"id": "a41bf2db9c59424389a1270a94c8cd45",
+			"preview_id": "b55abdeac78649f8a2a87494473b2904"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}

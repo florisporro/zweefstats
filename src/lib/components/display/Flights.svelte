@@ -1,9 +1,13 @@
 <script lang="ts">
-	export let flights: Flight[] = [];
+	interface Props {
+		flights?: Flight[];
+	}
+
+	let { flights = [] }: Props = $props();
 </script>
 
 <div class="overflow-x-auto">
-	<table class="table table-zebra table-compact w-full">
+	<table class="table table-zebra table-sm w-full">
 		<thead class="font-bold text-left">
 			<tr>
 				<td>Datum</td>
@@ -23,6 +27,9 @@
 			</tr>
 		</thead>
 		<tbody>
+			<!-- uuid identifies the flight, not the logbook entry: a two-seat flight yields two rows
+			     with the same uuid, so this read-only table stays unkeyed -->
+			<!-- eslint-disable-next-line svelte/require-each-key -->
 			{#each flights as flight}
 				<tr>
 					<td><pre>{flight.datum}</pre></td>

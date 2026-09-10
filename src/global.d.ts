@@ -114,7 +114,8 @@ declare interface Times {
 }
 
 declare interface Stats extends Times {
-	[key: string]: Flight[] | FlightsBy | FlightProps[] | Times | number | string | boolean | null | undefined;
+	[key: string]:
+		Flight[] | FlightsBy | FlightProps[] | Times | number | string | boolean | null | undefined;
 	pilot: string;
 	pilotId: number | null;
 	timesAfterExam: Times;
@@ -140,4 +141,27 @@ declare interface Stats extends Times {
 	lastExamIndex: number;
 	flightsAfterExam: Flight[];
 	examDateOverride?: string;
+}
+
+declare interface NationalStatistics {
+	pilots: number;
+	flightsCount: number;
+	picFlightsCount: number;
+	dboFlightsCount: number;
+	paxFlightsCount: number;
+	totalTime: number;
+	totalTimeFormatted: string;
+	picTime: number;
+	picTimeFormatted: string;
+	dboTime: number;
+	dboTimeFormatted: string;
+	paxTime: number;
+	paxTimeFormatted: string;
+	averageFlightsPerDay: number;
+	averagePicFlightsPerDay: number;
+	averageDboFlightsPerDay: number;
+	averageMinutesPerDay: number;
+	averageStartsYear: number;
+	averagePicStartsYear: number;
+	averageMinutesYear: number;
 }

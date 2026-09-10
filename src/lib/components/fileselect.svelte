@@ -1,6 +1,10 @@
 <script lang="ts">
-	let files: FileList;
-	export let contents: String;
+	let files = $state<FileList | undefined>();
+	interface Props {
+		contents: string;
+	}
+
+	let { contents = $bindable() }: Props = $props();
 
 	function printFile(file: File) {
 		const reader = new FileReader();
@@ -12,9 +16,9 @@
 		reader.readAsText(file);
 	}
 
-	$: if (files) {
-		printFile(files[0]);
-	}
+	$effect(() => {
+		if (files?.length) printFile(files[0]);
+	});
 </script>
 
 <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input"

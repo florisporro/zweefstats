@@ -121,19 +121,23 @@ export function getTimes(data: DutchFlight[], pilot: string, pilotId: number | n
 	// Find all xcountry flights paid for by the pilot
 	const xcountryFlights = data.filter((a) => {
 		// Check if the pilot was PIC or the paying member, and it's overland with valid flight duration > 33 minutes
-		return (a.gezagvoerder_naam === pilot || (pilotId !== null && a.betalend_lid_id === pilotId)) && 
-			a.is_overland === true && 
-			typeof a.vluchtduur === 'number' && 
-			a.vluchtduur > 33;
+		return (
+			(a.gezagvoerder_naam === pilot || (pilotId !== null && a.betalend_lid_id === pilotId)) &&
+			a.is_overland === true &&
+			typeof a.vluchtduur === 'number' &&
+			a.vluchtduur > 33
+		);
 	});
 
 	// Find all xcountry attempts flights paid for by the pilot
 	const xcountryattemptFlights = data.filter((a) => {
 		// Check if the pilot was PIC or the paying member, and it's overland with valid flight duration < 33 minutes
-		return (a.gezagvoerder_naam === pilot || (pilotId !== null && a.betalend_lid_id === pilotId)) && 
-			a.is_overland === true && 
-			typeof a.vluchtduur === 'number' && 
-			a.vluchtduur < 33;
+		return (
+			(a.gezagvoerder_naam === pilot || (pilotId !== null && a.betalend_lid_id === pilotId)) &&
+			a.is_overland === true &&
+			typeof a.vluchtduur === 'number' &&
+			a.vluchtduur < 33
+		);
 	});
 
 	return {
@@ -192,7 +196,8 @@ export function getStatistics(data: DutchFlight[], examDateOverride?: string): S
 	const pilot = mostLikelyPilot[0];
 
 	// Explicitly make pilotId either a number or null
-	const pilotId: number | null = data.find((a) => a.gezagvoerder_naam === pilot)?.gezagvoerder_id || null;
+	const pilotId: number | null =
+		data.find((a) => a.gezagvoerder_naam === pilot)?.gezagvoerder_id || null;
 
 	const complete = getTimes(data, pilot, pilotId);
 

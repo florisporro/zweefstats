@@ -2,9 +2,12 @@
 	import type { PageData } from './$types';
 	import SingleValueCard from '$lib/components/display/singlevaluecard.svelte';
 	import TimeDisplay from '$lib/components/display/timedisplay.svelte';
-	import KeyValue from '$lib/components/display/keyvalue.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	function round(value: number) {
 		return Math.round(value * 100) / 100;
@@ -27,7 +30,7 @@
 </ul>
 
 <div class="buttons flex flex-row gap-5 justify-center mt-12 mb-2">
-	<a href="/load/zweefapp" class="btn btn-lg">Data inladen uit de Zweef App</a>
+	<a href="/load/zweefapp" class="btn btn-neutral btn-lg">Data inladen uit de Zweef App</a>
 </div>
 <div class="buttons flex flex-row gap-5 justify-center mb-12">
 	<a href="/load/csv" class="btn btn-outline">Data inladen uit CSV</a>
@@ -40,7 +43,7 @@
 		Daarmee kunnen we de onderstaande statistieken berekenen:
 	</p>
 	<p class="mx-auto mb-12 leading-relaxed text-sm">
-		(de herberekening van de statistieken gebeurt eenmaal per uur, op het hele uur)
+		(we werken deze statistieken bij zodra iemand nieuwe gegevens deelt)
 	</p>
 
 	<section class="statscontainer segment">
@@ -84,6 +87,8 @@
 {/if}
 
 <style lang="postcss">
+	@reference '../app.css';
+
 	ul {
 		@apply text-lg leading-8 lg:text-xl lg:leading-9 xl:text-2xl xl:leading-10;
 	}

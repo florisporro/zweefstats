@@ -1,5 +1,10 @@
-<script>
-	import '../app.pcss';
+<script lang="ts">
+	import '../app.css';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <section class="container mx-auto py-12 px-2">
@@ -19,10 +24,12 @@
 		-
 		<span><a href="/changelog">Changelog</a></span>
 	</div>
-	<slot />
+	{@render children?.()}
 </section>
 
 <style lang="postcss">
+	@reference '../app.css';
+
 	h1 {
 		@apply text-4xl stroke-slate-400 md:text-8xl uppercase text-center;
 

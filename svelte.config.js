@@ -1,20 +1,16 @@
-import adapter from '@sveltejs/adapter-auto';
-import preprocess from 'svelte-preprocess';
-import { markdown } from 'svelte-preprocess-markdown';
+import adapter from '@sveltejs/adapter-cloudflare';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	// Consult https://github.com/sveltejs/svelte-preprocess
-	// for more information about preprocessors
-	extensions: [".svelte", ".md"],
-	preprocess: [
-		preprocess({
-			postcss: true,
-		}),
-		markdown(),
-	],
+	preprocess: vitePreprocess(),
 	kit: {
-		adapter: adapter()
+		adapter: adapter({
+			// gives `npm run dev` the real KV binding from wrangler.jsonc
+			platformProxy: {
+				configPath: 'wrangler.jsonc'
+			}
+		})
 	}
 };
 

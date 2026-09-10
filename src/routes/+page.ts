@@ -7,8 +7,7 @@ export const load = (async () => {
 		return {
 			stats
 		};
-	} catch(error) {
-		return {}
+	} catch {
+		return {};
 	}
-	
 }) satisfies PageLoad;

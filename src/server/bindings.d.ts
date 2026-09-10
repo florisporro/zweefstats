@@ -1,3 +1,0 @@
-interface Bindings {
-	zweefstats: KVNamespace;
-}
