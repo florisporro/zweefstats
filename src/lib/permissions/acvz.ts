@@ -70,7 +70,7 @@ const crossCountryCommonRequirements = {
 
 			// Filter flights that occurred within the last 6 months and are not TMG flights
 			const recentFlights = stats.flights.filter((flight) => {
-				if (!flight.datum) return false;
+				if (typeof flight.datum !== 'string') return false;
 				if (flight.start_methode === 'tmg') return false;
 				const flightDate = new Date(flight.datum);
 				return flightDate >= sixMonthsAgo && flightDate <= now;
@@ -91,7 +91,7 @@ const crossCountryCommonRequirements = {
 			// Filter flights that occurred within the last 3 months
 			// and match the specific type(s)
 			const recentTypeFlights = stats.picFlights.filter((flight) => {
-				if (!flight.datum || !flight.type) return false;
+				if (typeof flight.datum !== 'string' || typeof flight.type !== 'string') return false;
 				const flightDate = new Date(flight.datum);
 				return flightDate >= threeMonthsAgo && flightDate <= now && types.includes(flight.type);
 			});
@@ -212,7 +212,13 @@ const config: Permission[] = [
 			{
 				name: 'Tenminste 100 starts op de LS-8 / Duo Discus (XLT) /ASW-27 of gelijkwaardig type',
 				goal: 100,
-				calculate: (stats) => totalStartCount(stats, [...commonTypes.ls4, ...commonTypes.ls8, ...commonTypes.duo, ['ASW-27']])
+				calculate: (stats) =>
+					totalStartCount(stats, [
+						...commonTypes.ls4,
+						...commonTypes.ls8,
+						...commonTypes.duo,
+						'ASW-27'
+					])
 			},
 			{
 				name: 'Tenminste 20 starts op de Duo Discus (XLT)',
@@ -411,7 +417,8 @@ const config: Permission[] = [
 			{
 				name: crossCountryCommonRequirements.typeStarts.name,
 				goal: crossCountryCommonRequirements.typeStarts.goal,
-				calculate: (stats) => crossCountryCommonRequirements.typeStarts.calculate(stats, commonTypes.ask23)
+				calculate: (stats) =>
+					crossCountryCommonRequirements.typeStarts.calculate(stats, commonTypes.ask23)
 			},
 			crossCountryCommonRequirements.threeGoodLandings,
 			crossCountryCommonRequirements.overlandBriefing,

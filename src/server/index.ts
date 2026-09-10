@@ -1,9 +1,4 @@
 import { compileAverages } from './serverStats';
-interface CFListResponse {
-	keys: { name: string }[];
-	list_complete: boolean;
-	cursor: string;
-}
 
 export default {
 	async scheduled(event: Event, env: Bindings) {

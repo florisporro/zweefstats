@@ -1,5 +1,10 @@
-<script>
+<script lang="ts">
 	import '../app.pcss';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <section class="container mx-auto py-12 px-2">
@@ -19,7 +24,7 @@
 		-
 		<span><a href="/changelog">Changelog</a></span>
 	</div>
-	<slot />
+	{@render children?.()}
 </section>
 
 <style lang="postcss">

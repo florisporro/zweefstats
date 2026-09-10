@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import Statsdisplay from '$lib/components/statsdisplay.svelte';
 	import StatsDisplay from '$lib/components/statsdisplay.svelte';
-	import { sanitizeData } from '$lib/sanitize';
-	import { error } from '@sveltejs/kit';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <section class="container mx-auto py-12">

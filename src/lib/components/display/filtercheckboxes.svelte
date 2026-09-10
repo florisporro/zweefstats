@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
+
 	// Define the filter type
 	interface DataFilters {
 		showTotal?: boolean;
@@ -9,8 +11,6 @@
 		showOverland?: boolean;
 		[key: string]: boolean | undefined;
 	}
-
-	export let statistics: any;
 
 	// Define filter options
 	const filterOptions = [
@@ -43,24 +43,34 @@
 		return shouldShow;
 	}
 
-	// Generate filter state based on statistics
-	export let filters: DataFilters = {
-		showTotal: true,
-		showPIC: true,
-		showDBO: true,
-		showPAX: false,
-		showFI: false,
-		showOverland: false
-	};
+	interface Props {
+		statistics: any;
+		// Generate filter state based on statistics
+		filters?: DataFilters;
+	}
+
+	let {
+		statistics,
+		filters = $bindable({
+			showTotal: true,
+			showPIC: true,
+			showDBO: true,
+			showPAX: false,
+			showFI: false,
+			showOverland: false
+		})
+	}: Props = $props();
 
 	// Track if filters have been manually changed by the user
-	let filtersManuallyChanged = false;
+	let filtersManuallyChanged = $state(false);
 
-	// Set initial filters based on flight data
-	$: if (statistics && !filtersManuallyChanged) {
-		// Create a new filters object based on flight data
+	// Default the filters from the flight data, until the user picks their own.
+	// The current value is read untracked so this does not re-run on its own write.
+	$effect(() => {
+		if (!statistics || filtersManuallyChanged) return;
+
 		const dataBasedFilters: DataFilters = {
-			showTotal: true, // Always show total
+			showTotal: true,
 			showPIC: shouldShowFilter('showPIC'),
 			showDBO: shouldShowFilter('showDBO'),
 			showPAX: shouldShowFilter('showPAX'),
@@ -68,15 +78,11 @@
 			showOverland: shouldShowFilter('showOverland')
 		};
 
-		// Only update if the filters would actually change
-		const wouldChange = filterOptions.some(
-			(option) => filters[option.id] !== dataBasedFilters[option.id]
-		);
-
-		if (wouldChange) {
+		const current = untrack(() => filters);
+		if (filterOptions.some((option) => current[option.id] !== dataBasedFilters[option.id])) {
 			filters = dataBasedFilters;
 		}
-	}
+	});
 
 	function toggleFilter(filterId: string) {
 		// Mark filters as manually changed
@@ -90,7 +96,7 @@
 </script>
 
 <div class="flex flex-wrap gap-4 justify-center mb-8 p-4 bg-base-200 rounded-lg">
-	{#each filterOptions as option}
+	{#each filterOptions as option (option.id)}
 		{@const isDisabled = option.alwaysShow}
 		{@const noFlights =
 			(option.id === 'showPIC' && statistics.picFlightsCount === 0) ||
@@ -107,7 +113,7 @@
 				type="checkbox"
 				class="checkbox checkbox-secondary"
 				checked={filters[option.id]}
-				on:change={() => toggleFilter(option.id)}
+				onchange={() => toggleFilter(option.id)}
 				disabled={isDisabled || noFlights}
 			/>
 			<span class="label-text">{option.label}{noFlights ? ' (0)' : ''}</span>

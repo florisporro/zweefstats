@@ -36,13 +36,6 @@ function sumTotal(array: number[]) {
 	return array.reduce((partialSum, a) => partialSum + a, 0);
 }
 
-// Sums all the values of an array of objects with a number key
-function sumField(array: { [key: string]: number }[], field: string) {
-	const fieldArray = array.map((a) => Number(a[field]));
-	const sum = sumTotal(fieldArray);
-	return sum;
-}
-
 // Gets an average of all the values in an array
 function averageArray(array: number[]) {
 	const sanitizedArray = array.map((value) => {

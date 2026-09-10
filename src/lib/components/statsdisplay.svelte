@@ -10,9 +10,12 @@
 	import Popup from './popup.svelte';
 	import FilterCheckboxes from './display/filtercheckboxes.svelte';
 
-	export let data: DutchFlight[];
-	let statistics: Stats;
-	
+	interface Props {
+		data: DutchFlight[];
+	}
+
+	let { data }: Props = $props();
+
 	// Define the filter type
 	interface DataFilters {
 		showTotal: boolean;
@@ -23,19 +26,19 @@
 		showOverland: boolean;
 		[key: string]: boolean;
 	}
-	
+
 	// Display filters for columns
-	let displayFilters: DataFilters = {
+	let displayFilters: DataFilters = $state({
 		showTotal: true,
-		showPIC: true, 
+		showPIC: true,
 		showDBO: true,
 		showPAX: false,
 		showFI: false,
 		showOverland: false
-	};
-	
+	});
+
 	// Track expanded/collapsed state of each section
-	let expandedSections = {
+	let expandedSections = $state({
 		years: true,
 		launchMethods: true,
 		airplaneTypes: true,
@@ -43,15 +46,15 @@
 		examInfo: true,
 		permissionsMatrix: true,
 		overland: true
-	};
-	
+	});
+
 	// Define column interface
 	interface DisplayColumn {
 		key: string;
 		name: string;
 		category: 'total' | 'pic' | 'dbo' | 'pax' | 'fi' | 'overland' | 'other';
 	}
-	
+
 	// Define all available columns centrally
 	const allDisplayColumns: DisplayColumn[] = [
 		{ key: 'flightsCount', name: 'Vluchten', category: 'total' },
@@ -67,46 +70,44 @@
 		{ key: 'xcountryFlightsCount', name: 'Overland vluchten', category: 'overland' },
 		{ key: 'xcountryattemptFlightsCount', name: 'Overland pogingen', category: 'overland' }
 	];
-	
+
 	// Get filtered display columns based on active filters
-	$: displayColumns = allDisplayColumns.filter(column => {
-		if (column.category === 'total') return displayFilters.showTotal;
-		if (column.category === 'pic') return displayFilters.showPIC;
-		if (column.category === 'dbo') return displayFilters.showDBO;
-		if (column.category === 'pax') return displayFilters.showPAX;
-		if (column.category === 'fi') return displayFilters.showFI;
-		if (column.category === 'overland') return displayFilters.showOverland;
-		return true; // Include other categories by default
+	let displayColumns = $derived(
+		allDisplayColumns.filter((column) => {
+			if (column.category === 'total') return displayFilters.showTotal;
+			if (column.category === 'pic') return displayFilters.showPIC;
+			if (column.category === 'dbo') return displayFilters.showDBO;
+			if (column.category === 'pax') return displayFilters.showPAX;
+			if (column.category === 'fi') return displayFilters.showFI;
+			if (column.category === 'overland') return displayFilters.showOverland;
+			return true; // Include other categories by default
+		})
+	);
+
+	let inspectFlights: Flight[] = $state([]);
+	$effect(() => {
+		if (inspectFlights.length > 0) flightInspectorOpen = true;
 	});
 
-	let inspectFlights: Flight[] = [];
-	$: {
-		inspectFlights;
-		if (inspectFlights.length > 0) {
-			flightInspectorOpen = true;
-		}
-	}
+	let flightInspectorOpen = $state(false);
+	let shareStatsClosed = $state(false);
+	let shareStatsSending = $state(false);
+	let shareStatsSent = $state(false);
 
-	let flightInspectorOpen = false;
-	let shareStatsClosed = false;
-	let shareStatsSending = false;
-	let shareStatsSent = false;
-
-	let hideUnCheckedData = true;
+	let hideUnCheckedData = $state(true);
 
 	const sessionStorageValue = sessionStorage.getItem('zweefapp');
 	const parsedsessionStorage = sessionStorageValue ? JSON.parse(sessionStorageValue) : null;
-	let selectedClub = parsedsessionStorage ? parsedsessionStorage.club.toLowerCase() : '';
-	let examDateOverride: string = parsedsessionStorage?.examDateOverride ?? '';
+	let selectedClub = $state(parsedsessionStorage?.club?.toLowerCase() ?? '');
+	let examDateOverride: string = $state(parsedsessionStorage?.examDateOverride ?? '');
 
-	$: console.log({ selectedClub });
+	let statistics: Stats = $derived(getStatistics(data, examDateOverride || undefined));
 
-	$: statistics = getStatistics(data, examDateOverride || undefined);
-	$: console.log(statistics);
-
-	$: {
+	$effect(() => {
 		// Persist the exam date override in sessionStorage alongside existing settings.
 		const current = sessionStorage.getItem('zweefapp');
+		if (!current && !examDateOverride) return;
+
 		const parsed = current ? JSON.parse(current) : {};
 		if (examDateOverride) {
 			parsed.examDateOverride = examDateOverride;
@@ -114,7 +115,7 @@
 			delete parsed.examDateOverride;
 		}
 		sessionStorage.setItem('zweefapp', JSON.stringify(parsed));
-	}
+	});
 
 	function handleKeydown(event: any) {
 		if (event.key === 'Escape') {
@@ -131,11 +132,11 @@
 	}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <Popup
-	bind:open={flightInspectorOpen}
-	on:close={() => {
+	open={flightInspectorOpen}
+	onclose={() => {
 		flightInspectorOpen = false;
 	}}
 >
@@ -170,11 +171,11 @@
 		<div class="text-slate-600 uppercase font-bold text-center mb-4">
 			Statistieken voor {statistics.pilot}
 		</div>
-		
+
 		<!-- Add data filter checkboxes -->
-		<FilterCheckboxes statistics={statistics} bind:filters={displayFilters} />
-		
-		<div class="divider" />
+		<FilterCheckboxes {statistics} bind:filters={displayFilters} />
+
+		<div class="divider"></div>
 
 		{#if !shareStatsClosed}
 			<div class="alert alert-warning shadow-lg mb-5 md:w-2/3 mx-auto">
@@ -205,11 +206,11 @@
 					<div class="flex-none">
 						<button
 							class="btn btn-sm btn-ghost"
-							on:click={() => {
+							onclick={() => {
 								shareStatsClosed = true;
 							}}>Niet delen</button
 						>
-						<button class="btn btn-sm btn-primary" on:click={shareStats}>Gegevens delen</button>
+						<button class="btn btn-sm btn-primary" onclick={shareStats}>Gegevens delen</button>
 					</div>
 				{/if}
 			</div>
@@ -235,41 +236,50 @@
 <section class="statscontainer segment">
 	{#if displayFilters.showTotal}
 		<SingleValueCard name="Totaal starts">{statistics.flightsCount}</SingleValueCard>
-		<SingleValueCard name="Totaal tijd"><TimeDisplay value={statistics.totalTime} /></SingleValueCard>
+		<SingleValueCard name="Totaal tijd"
+			><TimeDisplay value={statistics.totalTime} /></SingleValueCard
+		>
 	{/if}
-	
+
 	{#if displayFilters.showDBO}
 		<SingleValueCard name="Totaal DBO starts">{statistics.dboFlightsCount}</SingleValueCard>
 		<SingleValueCard name="DBO tijd"><TimeDisplay value={statistics.dboTime} /></SingleValueCard>
 	{/if}
-	
+
 	{#if displayFilters.showPIC}
 		<SingleValueCard name="Totaal PIC starts">{statistics.picFlightsCount}</SingleValueCard>
 		<SingleValueCard name="PIC tijd"><TimeDisplay value={statistics.picTime} /></SingleValueCard>
 	{/if}
-	
+
 	{#if displayFilters.showPAX}
 		<SingleValueCard name="Totaal starts als PAX">
-			<a
-				href={'#'}
-				on:click|preventDefault={() => {
+			<button
+				type="button"
+				class="linkbutton"
+				onclick={(e) => {
+					e.preventDefault();
 					inspectFlights = statistics.paxFlights;
-				}}>{statistics.paxFlightsCount}</a
+				}}>{statistics.paxFlightsCount}</button
 			>
 		</SingleValueCard>
-		<SingleValueCard name="Tijd als PAX"><TimeDisplay value={statistics.paxTime} /></SingleValueCard>
+		<SingleValueCard name="Tijd als PAX"><TimeDisplay value={statistics.paxTime} /></SingleValueCard
+		>
 	{/if}
-	
+
 	{#if displayFilters.showFI}
 		<SingleValueCard name="FI starts">
-			<a
-				href={'#'}
-				on:click|preventDefault={() => {
+			<button
+				type="button"
+				class="linkbutton"
+				onclick={(e) => {
+					e.preventDefault();
 					inspectFlights = statistics.instructorFlights;
-				}}>{statistics.instructorFlightsCount}</a
+				}}>{statistics.instructorFlightsCount}</button
 			>
 		</SingleValueCard>
-		<SingleValueCard name="FI tijd"><TimeDisplay value={statistics.instructorTime} /></SingleValueCard>
+		<SingleValueCard name="FI tijd"
+			><TimeDisplay value={statistics.instructorTime} /></SingleValueCard
+		>
 	{/if}
 </section>
 
@@ -287,13 +297,13 @@
 			><TimeDisplay value={Math.round(statistics.averageMinutesYear)} /></SingleValueCard
 		>
 	{/if}
-	
+
 	{#if displayFilters.showPIC}
 		<SingleValueCard name="PIC starts per dag"
 			>{Math.round(statistics.averagePicFlightsPerDay * 100) / 100}</SingleValueCard
 		>
 	{/if}
-	
+
 	{#if displayFilters.showDBO}
 		<SingleValueCard name="DBO starts per dag"
 			>{Math.round(statistics.averageDboFlightsPerDay * 100) / 100}</SingleValueCard
@@ -303,12 +313,15 @@
 
 {#if displayFilters.showOverland}
 	<div class="divider">
-		<div class="flex items-center gap-2 cursor-pointer" 
-			on:click={() => expandedSections.overland = !expandedSections.overland}
-			on:keydown={(e) => e.key === 'Enter' && (expandedSections.overland = !expandedSections.overland)}
+		<div
+			class="flex items-center gap-2 cursor-pointer"
+			onclick={() => (expandedSections.overland = !expandedSections.overland)}
+			onkeydown={(e) =>
+				e.key === 'Enter' && (expandedSections.overland = !expandedSections.overland)}
 			tabindex="0"
 			role="button"
-			aria-expanded={expandedSections.overland}>
+			aria-expanded={expandedSections.overland}
+		>
 			<span>Overland vluchten</span>
 			<span class="text-xl">{expandedSections.overland ? '🔼' : '🔽'}</span>
 		</div>
@@ -321,35 +334,43 @@
 					<span class="text-4xl p-6">ℹ️</span>
 
 					<span
-						>Een buitenlanding is hier: een vlucht waar de plek van aankomst verschilt van de plek van
-						vertrek. Als deze data niet klopt, kun je die wijzigen in de Zweef App.
+						>Een buitenlanding is hier: een vlucht waar de plek van aankomst verschilt van de plek
+						van vertrek. Als deze data niet klopt, kun je die wijzigen in de Zweef App.
 					</span>
 				</div>
 			</div>
 			<section class="statscontainer segment transition-all duration-300">
 				<SingleValueCard name="Overland vluchten">
-					<a
-						href={'#'}
-						on:click|preventDefault={() => {
+					<button
+						type="button"
+						class="linkbutton"
+						onclick={(e) => {
+							e.preventDefault();
 							inspectFlights = statistics.xcountryFlights;
-						}}>{statistics.xcountryFlightsCount}</a
+						}}>{statistics.xcountryFlightsCount}</button
 					>
 				</SingleValueCard>
 				<SingleValueCard name="Overland pogingen">
-					<a
-						href={'#'}
-						on:click|preventDefault={() => {
+					<button
+						type="button"
+						class="linkbutton"
+						onclick={(e) => {
+							e.preventDefault();
 							inspectFlights = statistics.xcountryattemptFlights;
-						}}>{statistics.xcountryattemptFlightsCount}</a
+						}}>{statistics.xcountryattemptFlightsCount}</button
 					>
 				</SingleValueCard>
-				<SingleValueCard name="Laatste overland">{statistics.xcountryFlights[0].datum}</SingleValueCard>
+				<SingleValueCard name="Laatste overland"
+					>{statistics.xcountryFlights[0].datum}</SingleValueCard
+				>
 				<SingleValueCard name="Buitenlandingen">
-					<a
-						href={'#'}
-						on:click|preventDefault={() => {
+					<button
+						type="button"
+						class="linkbutton"
+						onclick={(e) => {
+							e.preventDefault();
 							inspectFlights = statistics.outlandings;
-						}}>{statistics.outlandings.length}</a
+						}}>{statistics.outlandings.length}</button
 					>
 				</SingleValueCard>
 			</section>
@@ -360,12 +381,14 @@
 {/if}
 
 <div class="divider">
-	<div class="flex items-center gap-2 cursor-pointer" 
-		on:click={() => expandedSections.years = !expandedSections.years}
-		on:keydown={(e) => e.key === 'Enter' && (expandedSections.years = !expandedSections.years)}
+	<div
+		class="flex items-center gap-2 cursor-pointer"
+		onclick={() => (expandedSections.years = !expandedSections.years)}
+		onkeydown={(e) => e.key === 'Enter' && (expandedSections.years = !expandedSections.years)}
 		tabindex="0"
 		role="button"
-		aria-expanded={expandedSections.years}>
+		aria-expanded={expandedSections.years}
+	>
 		<span>Jaren</span>
 		<span class="text-xl">{expandedSections.years ? '🔼' : '🔽'}</span>
 	</div>
@@ -383,12 +406,15 @@
 {/if}
 
 <div class="divider">
-	<div class="flex items-center gap-2 cursor-pointer" 
-		on:click={() => expandedSections.launchMethods = !expandedSections.launchMethods}
-		on:keydown={(e) => e.key === 'Enter' && (expandedSections.launchMethods = !expandedSections.launchMethods)}
+	<div
+		class="flex items-center gap-2 cursor-pointer"
+		onclick={() => (expandedSections.launchMethods = !expandedSections.launchMethods)}
+		onkeydown={(e) =>
+			e.key === 'Enter' && (expandedSections.launchMethods = !expandedSections.launchMethods)}
 		tabindex="0"
 		role="button"
-		aria-expanded={expandedSections.launchMethods}>
+		aria-expanded={expandedSections.launchMethods}
+	>
 		<span>Startmiddelen</span>
 		<span class="text-xl">{expandedSections.launchMethods ? '🔼' : '🔽'}</span>
 	</div>
@@ -405,12 +431,15 @@
 	</section>
 {/if}
 <div class="divider">
-	<div class="flex items-center gap-2 cursor-pointer" 
-		on:click={() => expandedSections.airplaneTypes = !expandedSections.airplaneTypes}
-		on:keydown={(e) => e.key === 'Enter' && (expandedSections.airplaneTypes = !expandedSections.airplaneTypes)}
+	<div
+		class="flex items-center gap-2 cursor-pointer"
+		onclick={() => (expandedSections.airplaneTypes = !expandedSections.airplaneTypes)}
+		onkeydown={(e) =>
+			e.key === 'Enter' && (expandedSections.airplaneTypes = !expandedSections.airplaneTypes)}
 		tabindex="0"
 		role="button"
-		aria-expanded={expandedSections.airplaneTypes}>
+		aria-expanded={expandedSections.airplaneTypes}
+	>
 		<span>Vliegtuigtypes</span>
 		<span class="text-xl">{expandedSections.airplaneTypes ? '🔼' : '🔽'}</span>
 	</div>
@@ -427,12 +456,15 @@
 	</section>
 {/if}
 <div class="divider">
-	<div class="flex items-center gap-2 cursor-pointer" 
-		on:click={() => expandedSections.airfields = !expandedSections.airfields}
-		on:keydown={(e) => e.key === 'Enter' && (expandedSections.airfields = !expandedSections.airfields)}
+	<div
+		class="flex items-center gap-2 cursor-pointer"
+		onclick={() => (expandedSections.airfields = !expandedSections.airfields)}
+		onkeydown={(e) =>
+			e.key === 'Enter' && (expandedSections.airfields = !expandedSections.airfields)}
 		tabindex="0"
 		role="button"
-		aria-expanded={expandedSections.airfields}>
+		aria-expanded={expandedSections.airfields}
+	>
 		<span>Vliegvelden</span>
 		<span class="text-xl">{expandedSections.airfields ? '🔼' : '🔽'}</span>
 	</div>
@@ -450,12 +482,14 @@
 {/if}
 
 <div class="divider">
-	<div class="flex items-center gap-2 cursor-pointer" 
-		on:click={() => expandedSections.examInfo = !expandedSections.examInfo}
-		on:keydown={(e) => e.key === 'Enter' && (expandedSections.examInfo = !expandedSections.examInfo)}
+	<div
+		class="flex items-center gap-2 cursor-pointer"
+		onclick={() => (expandedSections.examInfo = !expandedSections.examInfo)}
+		onkeydown={(e) => e.key === 'Enter' && (expandedSections.examInfo = !expandedSections.examInfo)}
 		tabindex="0"
 		role="button"
-		aria-expanded={expandedSections.examInfo}>
+		aria-expanded={expandedSections.examInfo}
+	>
 		<span>Sinds laatste examenvlucht</span>
 		<span class="text-xl">{expandedSections.examInfo ? '🔼' : '🔽'}</span>
 	</div>
@@ -474,7 +508,7 @@
 				bind:value={examDateOverride}
 			/>
 			{#if examDateOverride}
-				<button class="btn btn-sm btn-ghost" on:click={() => (examDateOverride = '')}>Wis</button>
+				<button class="btn btn-sm btn-ghost" onclick={() => (examDateOverride = '')}>Wis</button>
 			{/if}
 		</div>
 		<p class="text-xs text-slate-500 mt-1">
@@ -485,11 +519,13 @@
 		{#if statistics.examFlights.length > 0 || examDateOverride}
 			{#if statistics.examFlights.length > 0}
 				<SingleValueCard name="Examen vluchten">
-					<a
-						href={'#'}
-						on:click|preventDefault={() => {
+					<button
+						type="button"
+						class="linkbutton"
+						onclick={(e) => {
+							e.preventDefault();
 							inspectFlights = statistics.examFlights;
-						}}>{statistics.examFlights.length}</a
+						}}>{statistics.examFlights.length}</button
 					>
 				</SingleValueCard>
 			{/if}
@@ -497,14 +533,16 @@
 				<SingleValueCard name="Examen datum (handmatig)">{examDateOverride}</SingleValueCard>
 			{/if}
 			<SingleValueCard name="Examen gehaald">{statistics.hasLicense ? '✅' : '❌'}</SingleValueCard>
-			
+
 			{#if displayFilters.showTotal}
-				<SingleValueCard name="Totaal starts">{statistics.timesAfterExam.flightsCount}</SingleValueCard>
+				<SingleValueCard name="Totaal starts"
+					>{statistics.timesAfterExam.flightsCount}</SingleValueCard
+				>
 				<SingleValueCard name="Totaal tijd"
 					><TimeDisplay value={statistics.timesAfterExam.totalTime} /></SingleValueCard
 				>
 			{/if}
-			
+
 			{#if displayFilters.showDBO}
 				<SingleValueCard name="Totaal DBO starts"
 					>{statistics.timesAfterExam.dboFlightsCount}</SingleValueCard
@@ -513,7 +551,7 @@
 					><TimeDisplay value={statistics.timesAfterExam.dboTime} /></SingleValueCard
 				>
 			{/if}
-			
+
 			{#if displayFilters.showPIC}
 				<SingleValueCard name="Totaal PIC starts"
 					>{statistics.timesAfterExam.picFlightsCount}</SingleValueCard
@@ -522,7 +560,7 @@
 					><TimeDisplay value={statistics.timesAfterExam.picTime} /></SingleValueCard
 				>
 			{/if}
-			
+
 			{#if displayFilters.showFI}
 				<SingleValueCard name="Totaal FI starts"
 					>{statistics.timesAfterExam.instructorFlightsCount}</SingleValueCard
@@ -538,12 +576,16 @@
 {/if}
 
 <div class="divider">
-	<div class="flex items-center gap-2 cursor-pointer" 
-		on:click={() => expandedSections.permissionsMatrix = !expandedSections.permissionsMatrix}
-		on:keydown={(e) => e.key === 'Enter' && (expandedSections.permissionsMatrix = !expandedSections.permissionsMatrix)}
+	<div
+		class="flex items-center gap-2 cursor-pointer"
+		onclick={() => (expandedSections.permissionsMatrix = !expandedSections.permissionsMatrix)}
+		onkeydown={(e) =>
+			e.key === 'Enter' &&
+			(expandedSections.permissionsMatrix = !expandedSections.permissionsMatrix)}
 		tabindex="0"
 		role="button"
-		aria-expanded={expandedSections.permissionsMatrix}>
+		aria-expanded={expandedSections.permissionsMatrix}
+	>
 		<span>Bevoegdhedenmatrix</span>
 		<span class="text-xl">{expandedSections.permissionsMatrix ? '🔼' : '🔽'}</span>
 	</div>
@@ -554,25 +596,25 @@
 		<div class="alert alert-info shadow-lg md:w-2/3 mx-auto mb-12">
 			<div>
 				<span class="text-4xl p-6">ℹ️</span>
-	
+
 				<span
-					>Onderstaande gegevens dienen als hulpmiddel, de kans op fouten is aanwezig. Raadpleeg zelf
-					de reglementen van je club.
+					>Onderstaande gegevens dienen als hulpmiddel, de kans op fouten is aanwezig. Raadpleeg
+					zelf de reglementen van je club.
 				</span>
 			</div>
 		</div>
-	
+
 		<p class="mb-4">
 			De bevoegdheden van je club hier zichtbaar? <a
 				href="https://github.com/florisporro/zweefstats/issues"
 				target="_blank">Open een issue op Github</a
 			>.
 		</p>
-	
+
 		<div class="w-full md:w-1/3 flex flex-row mx-auto mb-12">
 			<div class="form-control">
 				<label class="label cursor-pointer" for="verbergVereisten">
-					<span class="label-text "
+					<span class="label-text"
 						>Verberg vereisten die niet vastgesteld kunnen worden met data uit de Zweef app</span
 					>
 				</label>
@@ -588,7 +630,7 @@
 					<span class="label-text">Selecteer je club om permissies te tonen</span>
 				</label>
 				<select class="select w-full max-w-xs" name="clubSelector" bind:value={selectedClub}>
-					{#each Object.keys(Clubs) as club}
+					{#each Object.keys(Clubs) as club (club)}
 						<option value={club}>{club}</option>
 					{/each}
 				</select>
@@ -596,12 +638,12 @@
 		</div>
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
 			{#if Clubs[selectedClub] !== undefined}
-				{#each Clubs[selectedClub] as permission}
+				{#each Clubs[selectedClub] as permission (permission.name)}
 					<div class="card bg-base-100 shadow-xl">
 						<div class="card-body">
 							<h2 class="card-title text-black">{permission.name}</h2>
 							<div class="flex flex-col gap-2">
-								{#each permission.requirements as requirement}
+								{#each permission.requirements as requirement (requirement.name)}
 									{#if requirement.calculate}
 										{@const value = requirement.calculate(statistics)}
 										{@const goalFactor = requirement.goal ? value / requirement.goal : value}
@@ -615,7 +657,7 @@
 												🛑 {requirement.name}
 												{requirement.goal ? `(${Math.round(value)} / ${requirement.goal})` : ``}
 											</p>
-											<progress class="progress w-56" value={goalFactor} max="1" />
+											<progress class="progress w-56" value={goalFactor} max="1"></progress>
 										{/if}
 									{:else if !hideUnCheckedData}
 										<p>❓ {requirement.name}</p>

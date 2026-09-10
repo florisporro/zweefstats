@@ -1,12 +1,17 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
-	const dispatch = createEventDispatcher();
+	import { onMount } from 'svelte';
 
-	function close() {
-		dispatch('close');
+	interface Props {
+		open?: boolean;
+		onclose?: () => void;
+		children?: import('svelte').Snippet;
 	}
 
-	export let open: boolean = false;
+	let { open = false, onclose, children }: Props = $props();
+
+	function close() {
+		onclose?.();
+	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
@@ -30,14 +35,17 @@
 </script>
 
 {#if open}
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div class="popupcontainer" on:click={handleClickOutside}>
+	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+	<!-- Escape is handled globally in onMount -->
+	<div class="popupcontainer" onclick={handleClickOutside}>
 		<div class="popup">
 			<div class="header">
-				<div class="closebutton selectable" on:click={close}>❌</div>
+				<button type="button" class="closebutton selectable" aria-label="Sluiten" onclick={close}
+					>❌</button
+				>
 			</div>
 			<div class="body">
-				<slot />
+				{@render children?.()}
 			</div>
 		</div>
 	</div>

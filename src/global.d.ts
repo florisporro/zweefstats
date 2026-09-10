@@ -114,7 +114,8 @@ declare interface Times {
 }
 
 declare interface Stats extends Times {
-	[key: string]: Flight[] | FlightsBy | FlightProps[] | Times | number | string | boolean | null | undefined;
+	[key: string]:
+		Flight[] | FlightsBy | FlightProps[] | Times | number | string | boolean | null | undefined;
 	pilot: string;
 	pilotId: number | null;
 	timesAfterExam: Times;

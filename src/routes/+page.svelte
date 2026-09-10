@@ -2,9 +2,12 @@
 	import type { PageData } from './$types';
 	import SingleValueCard from '$lib/components/display/singlevaluecard.svelte';
 	import TimeDisplay from '$lib/components/display/timedisplay.svelte';
-	import KeyValue from '$lib/components/display/keyvalue.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	function round(value: number) {
 		return Math.round(value * 100) / 100;
