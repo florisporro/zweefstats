@@ -116,7 +116,7 @@
 				onchange={() => toggleFilter(option.id)}
 				disabled={isDisabled || noFlights}
 			/>
-			<span class="label-text">{option.label}{noFlights ? ' (0)' : ''}</span>
+			<span class="text-sm">{option.label}{noFlights ? ' (0)' : ''}</span>
 		</label>
 	{/each}
 </div>

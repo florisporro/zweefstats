@@ -52,8 +52,10 @@
 {/if}
 
 <style lang="postcss">
+	@reference '../../app.css';
+
 	.popupcontainer {
-		@apply z-50 fixed top-0 left-0 w-full h-full bg-opacity-50 bg-gray-500 flex flex-col justify-start;
+		@apply z-50 fixed top-0 left-0 w-full h-full bg-gray-500/50 flex flex-col justify-start;
 		overflow-y: auto;
 	}
 

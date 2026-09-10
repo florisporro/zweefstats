@@ -28,6 +28,8 @@
 </section>
 
 <style lang="postcss">
+	@reference '../app.css';
+
 	h1 {
 		@apply text-4xl stroke-slate-400 md:text-8xl uppercase text-center;
 

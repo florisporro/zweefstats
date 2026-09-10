@@ -26,9 +26,10 @@
 		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/kit": "^2.70.3",
 		"@sveltejs/vite-plugin-svelte": "^7.3.0",
-		"@tailwindcss/postcss": "^4.3.3",
 		"@tailwindcss/typography": "^0.5.7",
+		"@tailwindcss/vite": "^4.3.3",
 		"@types/papaparse": "^5.5.2",
+		"daisyui": "^5.7.34",
 		"esbuild": "^0.28.2",
 		"eslint": "^10.10.0",
 		"eslint-config-prettier": "^10.1.8",
@@ -36,7 +37,6 @@
 		"globals": "^17.12.0",
 		"lcp": "^1.1.0",
 		"local-cors-proxy": "^1.1.0",
-		"postcss": "^8.4.18",
 		"prettier": "^3.9.6",
 		"prettier-plugin-svelte": "^4.1.1",
 		"svelte": "^5.57.0",
@@ -50,7 +50,6 @@
 		"wrangler": "^2.11.1"
 	},
 	"dependencies": {
-		"daisyui": "^2.42.1",
 		"marked": "^18.0.12",
 		"papaparse": "^5.3.2"
 	}

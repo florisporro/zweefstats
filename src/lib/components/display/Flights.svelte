@@ -7,7 +7,7 @@
 </script>
 
 <div class="overflow-x-auto">
-	<table class="table table-zebra table-compact w-full">
+	<table class="table table-zebra table-sm w-full">
 		<thead class="font-bold text-left">
 			<tr>
 				<td>Datum</td>

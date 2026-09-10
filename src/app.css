@@ -1,51 +1,62 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&family=Teko:wght@600&display=swap');
 
 @import 'tailwindcss';
-
-body,
-html {
-	@apply bg-slate-300;
-	font-family: 'Roboto', sans-serif;
+@plugin '@tailwindcss/typography';
+@plugin 'daisyui' {
+	themes: emerald --default;
 }
 
-h2,
-h3 {
-	@apply mb-12;
+/* Element defaults belong in the base layer: unlayered CSS outranks every
+   layered rule in Tailwind 4, which would let the bare `a` rule below beat
+   daisyUI's .btn regardless of specificity. */
+@layer base {
+	body,
+	html {
+		@apply bg-slate-300;
+		font-family: 'Roboto', sans-serif;
+	}
+
+	h2,
+	h3 {
+		@apply mb-12;
+	}
+
+	h1 {
+		font-family: 'Teko', sans-serif;
+	}
+
+	h2 {
+		@apply text-4xl text-center;
+	}
+	h3 {
+		@apply text-3xl text-center;
+	}
+
+	a:not(.btn) {
+		@apply text-sky-600 underline underline-offset-4;
+	}
+	a:not(.btn):hover {
+		@apply text-sky-800 no-underline transition-all;
+	}
 }
 
-h1 {
-	font-family: 'Teko', sans-serif;
-}
+@layer components {
+	.segment > p {
+		@apply text-center font-bold;
+	}
 
-h2 {
-	@apply text-4xl text-center;
-}
-h3 {
-	@apply text-3xl text-center;
-}
+	.statscontainer {
+		@apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3;
+	}
 
-a {
-	@apply text-sky-600 underline underline-offset-4;
-}
-a:hover {
-	@apply text-sky-800 no-underline transition-all;
-}
+	.segment {
+		@apply mb-12;
+	}
 
-.segment > p {
-	@apply text-center font-bold;
-}
-
-.statscontainer {
-	@apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3;
-}
-
-.segment {
-	@apply mb-12;
-}
-
-button.linkbutton {
-	@apply text-sky-600 underline underline-offset-4 cursor-pointer;
-}
-button.linkbutton:hover {
-	@apply text-sky-800 no-underline transition-all;
+	button.linkbutton {
+		@apply text-sky-600 underline underline-offset-4 cursor-pointer;
+	}
+	button.linkbutton:hover {
+		@apply text-sky-800 no-underline transition-all;
+	}
 }

@@ -30,7 +30,7 @@
 </ul>
 
 <div class="buttons flex flex-row gap-5 justify-center mt-12 mb-2">
-	<a href="/load/zweefapp" class="btn btn-lg">Data inladen uit de Zweef App</a>
+	<a href="/load/zweefapp" class="btn btn-neutral btn-lg">Data inladen uit de Zweef App</a>
 </div>
 <div class="buttons flex flex-row gap-5 justify-center mb-12">
 	<a href="/load/csv" class="btn btn-outline">Data inladen uit CSV</a>
@@ -87,6 +87,8 @@
 {/if}
 
 <style lang="postcss">
+	@reference '../app.css';
+
 	ul {
 		@apply text-lg leading-8 lg:text-xl lg:leading-9 xl:text-2xl xl:leading-10;
 	}
