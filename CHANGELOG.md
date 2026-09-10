@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.0](https://github.com/florisporro/zweefstats/compare/v1.5.0...v1.6.0) (2026-09-10)
+
+
+### Features
+
+* migrate to SvelteKit 2 and Svelte 5 runes ([ecaa377](https://github.com/florisporro/zweefstats/commit/ecaa377fefb5e4992cb225622c089a4d82a63c58))
+* serve the API from the SvelteKit worker, deploy from git ([79b74c1](https://github.com/florisporro/zweefstats/commit/79b74c198ba3082a302dd75298eafa5a8f419f9d))
+* upgrade to Tailwind 4 and daisyUI 5 ([0c301a4](https://github.com/florisporro/zweefstats/commit/0c301a4c576f99a2170cb95d48e984ef22bb9ff3))
+
+
+### Bug Fixes
+
+* point KV at the production namespace, stop checking generated JS ([31ef92f](https://github.com/florisporro/zweefstats/commit/31ef92fa78948d1268730907f1d24fc18e4e3243))
+* rebuild the lockfile with every platform's native binaries ([5b7b04a](https://github.com/florisporro/zweefstats/commit/5b7b04a6d133ec37069dd8490a2e74e3dbf92696))
+* skip malformed records when rebuilding national statistics ([2f29238](https://github.com/florisporro/zweefstats/commit/2f29238a5d03f891880afd7331bc2aef129c8a60))
+
 ## [1.5.0](https://github.com/florisporro/zweefstats/compare/v1.4.1...v1.5.0) (2026-05-24)
 
 
