@@ -1,5 +1,5 @@
 <script>
-	import '../src/app.pcss';
+	import '../src/app.css';
 </script>
 
 <section class="container mx-auto mt-12">
