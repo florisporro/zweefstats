@@ -39,6 +39,14 @@ export default ts.config(
 		}
 	},
 	{
-		ignores: ['.svelte-kit/', 'build/', 'dist/', 'node_modules/', '__previewjs__/', '**/*.cjs']
+		ignores: [
+			'.svelte-kit/',
+			'.wrangler/',
+			'build/',
+			'node_modules/',
+			'__previewjs__/',
+			'worker-configuration.d.ts',
+			'**/*.cjs'
+		]
 	}
 );

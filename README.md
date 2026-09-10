@@ -6,7 +6,7 @@ Simple static site built with SvelteKit, hosted on Cloudflare, to take a CSV fil
 
 The permission checks I've programmed are very specific to the requirements at my club, but could be easily adopted for other purposes.
 
-It's deployed here: [https://zweefstats.pages.dev/](https://zweefstats.pages.dev/)
+It's deployed here: [https://zweefstats.nl/](https://zweefstats.nl/)
 
 [Here is an anonymized example CSV](https://raw.githubusercontent.com/florisporro/zweefstats/master/example.csv) that you can try it with if you don't have access to such data.
 
@@ -29,8 +29,14 @@ To create a production version of your app:
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+`npm run preview` builds and serves the app on the real Workers runtime through `wrangler dev`,
+including the KV binding.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+The build reads `PUBLIC_ZWEEFAPP_BASE_URL` from the environment and fails without it. Copy
+`.env.example` to `.env` to develop locally.
 
-A demo is deployed here on Cloudflare Pages: [https://zweefstats.pages.dev/](https://zweefstats.pages.dev/)
+## Deploying
+
+The app is a single Cloudflare Worker serving static assets plus a small KV-backed API.
+`wrangler.jsonc` holds the configuration, and pushing to `master` deploys it through the
+Workers Builds git connection. `npm run deploy` deploys manually from a working copy.

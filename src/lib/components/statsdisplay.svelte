@@ -188,9 +188,8 @@
 					<div class="flex items-center gap-2">
 						<span class="text-4xl p-6">✅</span>
 						<span
-							>Dank voor het delen van je gegevens! Ze worden verwerkt en binnen een uur aan de
-							statistieken op de homepage toegevoegd. Eerder ingestuurde gegevens worden automatisch
-							vervangen.</span
+							>Dank voor het delen van je gegevens! Ze staan binnen een kwartier in de statistieken
+							op de homepage. Eerder ingestuurde gegevens vervangen we automatisch.</span
 						>
 					</div>
 				{/if}

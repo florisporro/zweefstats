@@ -1,42 +1,28 @@
-import { dev } from '$app/environment';
+const endpoint = '/api/stats';
 
-let baseUrl = 'https://api.zweefstats.nl/';
-if (dev) baseUrl = 'http://localhost:8010/proxy';
-
-export const getStats = async () => {
-	const requestHeaders: HeadersInit = new Headers();
-	requestHeaders.set('Accept', 'application/json');
-	requestHeaders.set('Content-Type', 'application/json');
-
-	const response = await fetch(`${baseUrl}`, {
+export const getStats = async (): Promise<NationalStatistics | null> => {
+	const response = await fetch(endpoint, {
 		method: 'GET',
-		headers: requestHeaders
+		headers: { Accept: 'application/json' }
 	});
 
-	const json = await response.json();
-	return json;
+	return response.json();
 };
 
 export const saveStats = async (data: Stats, club: string | undefined) => {
-	const requestHeaders: HeadersInit = new Headers();
-	requestHeaders.set('Accept', 'application/json');
-	requestHeaders.set('Content-Type', 'application/json');
-
 	const key = `${data.pilotId} ${data.pilot}`;
 
-	const string = JSON.stringify({
-		pilot: data.pilot,
-		pilotId: data.pilotId,
-		key,
-		club,
-		data: data.flights
+	const response = await fetch(endpoint, {
+		method: 'POST',
+		headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			pilot: data.pilot,
+			pilotId: data.pilotId,
+			key,
+			club,
+			data: data.flights
+		})
 	});
 
-	const response = await fetch(baseUrl, {
-		method: 'POST',
-		headers: requestHeaders,
-		body: string
-	});
-	const json = await response.json();
-	return json;
+	return response.json();
 };

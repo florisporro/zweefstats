@@ -43,7 +43,7 @@
 		Daarmee kunnen we de onderstaande statistieken berekenen:
 	</p>
 	<p class="mx-auto mb-12 leading-relaxed text-sm">
-		(de herberekening van de statistieken gebeurt eenmaal per uur, op het hele uur)
+		(we werken deze statistieken bij zodra iemand nieuwe gegevens deelt)
 	</p>
 
 	<section class="statscontainer segment">
