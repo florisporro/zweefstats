@@ -47,7 +47,7 @@ const crossCountryCommonRequirements = {
 		goal: 2,
 		calculate: (stats: Stats) => {
 			// Find flights with duration ≥ 60 minutes
-			const longFlights = stats.picFlights.filter(
+			const longFlights = stats.gliderPicFlights.filter(
 				(flight) => typeof flight.vluchtduur === 'number' && flight.vluchtduur >= 60
 			);
 			return longFlights.length;
@@ -192,7 +192,7 @@ const config: Permission[] = [
 			{
 				name: '30 vlieguren als gezagvoerder na het behalen van het LAPL/SPL',
 				goal: 30,
-				calculate: (stats) => stats.timesAfterExam.picTime / 60
+				calculate: (stats) => stats.timesAfterExam.gliderPicTime / 60
 			},
 			{
 				name: 'Tenminste 30 starts op de LS4b/LS8 of gelijkwaardig type',
@@ -215,7 +215,7 @@ const config: Permission[] = [
 			{
 				name: '80 vlieguren als gezagvoerder na het behalen van het LAPL/SPL',
 				goal: 80,
-				calculate: (stats) => stats.timesAfterExam.picTime / 60
+				calculate: (stats) => stats.timesAfterExam.gliderPicTime / 60
 			},
 			{
 				name: 'Tenminste 100 starts op de LS-8 / Duo Discus (XLT) /ASW-27 of gelijkwaardig type',
@@ -280,7 +280,7 @@ const config: Permission[] = [
 			{
 				name: '60 vlieguren als gezagvoerder na het behalen van het LAPL/SPL',
 				goal: 60,
-				calculate: (stats) => stats.timesAfterExam.picTime / 60
+				calculate: (stats) => stats.timesAfterExam.gliderPicTime / 60
 			},
 			{
 				// Clubreglement v14.6 §4.2.10
@@ -308,7 +308,7 @@ const config: Permission[] = [
 			{
 				name: '60 vlieguren als gezagvoerder na het behalen van het LAPL/SPL',
 				goal: 60,
-				calculate: (stats) => stats.timesAfterExam.picTime / 60
+				calculate: (stats) => stats.timesAfterExam.gliderPicTime / 60
 			},
 			{
 				name: 'Tenminste 80 starts op de LS8 / Duo Discus / ASW-27',
@@ -372,12 +372,12 @@ const config: Permission[] = [
 			{
 				name: '40 PIC uren (Club)',
 				goal: 40,
-				calculate: (stats) => stats.picTime / 60
+				calculate: (stats) => stats.gliderPicTime / 60
 			},
 			{
 				name: '200 PIC starts (Club)',
 				goal: 200,
-				calculate: (stats) => stats.picFlightsCount
+				calculate: (stats) => stats.gliderPicFlightsCount
 			},
 			{
 				name: '> 18 jaar'
@@ -399,8 +399,8 @@ const config: Permission[] = [
 			{
 				name: 'Na SPL tenminste 30 uur of 120 starts als PIC',
 				calculate: (stats) => {
-					if (stats.timesAfterExam.picTime / 60 > 30) return 1;
-					if (stats.timesAfterExam.picFlightsCount > 120) return 1;
+					if (stats.timesAfterExam.gliderPicTime / 60 > 30) return 1;
+					if (stats.timesAfterExam.gliderPicFlightsCount > 120) return 1;
 					return 0;
 				}
 			}

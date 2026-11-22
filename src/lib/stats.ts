@@ -87,9 +87,18 @@ export function formatTime(time: number) {
 	return `${hours} uur en ${minutes} minuten`;
 }
 
+// A flight on a touring motor glider (TMG). zweef.app logs these with start method 'tmg';
+// self-launching gliders use 'self' and remain glider flights.
+export function isTmgFlight(flight: DutchFlight): boolean {
+	return flight.start_methode === 'tmg';
+}
+
 export function getTimes(data: DutchFlight[], pilot: string, pilotId: number | null = null): Times {
 	// Find all flights where pilot was PIC
 	const picFlights = data.filter((a) => a.gezagvoerder_naam === pilot);
+
+	// PIC flights in gliders only, for club requirements that count glider time (no TMG)
+	const gliderPicFlights = picFlights.filter((a) => !isTmgFlight(a));
 
 	// Find all flights where pilot was DBO
 	const dboFlights = data.filter(
@@ -109,6 +118,7 @@ export function getTimes(data: DutchFlight[], pilot: string, pilotId: number | n
 	// Sum flight time by category
 	const totalTime = sumField(data, 'vluchtduur');
 	const picTime = sumField(picFlights, 'vluchtduur');
+	const gliderPicTime = sumField(gliderPicFlights, 'vluchtduur');
 	const dboTime = sumField(dboFlights, 'vluchtduur');
 	const paxTime = sumField(paxFlights, 'vluchtduur');
 	const instructorTime = sumField(instructorFlights, 'vluchtduur');
@@ -121,9 +131,11 @@ export function getTimes(data: DutchFlight[], pilot: string, pilotId: number | n
 
 	// Find all xcountry flights paid for by the pilot
 	const xcountryFlights = data.filter((a) => {
-		// Check if the pilot was PIC or the paying member, and it's overland with valid flight duration > 33 minutes
+		// Check if the pilot was PIC or the paying member, and it's an overland glider flight (no
+		// TMG) with valid flight duration > 33 minutes
 		return (
 			(a.gezagvoerder_naam === pilot || (pilotId !== null && a.betalend_lid_id === pilotId)) &&
+			!isTmgFlight(a) &&
 			a.is_overland === true &&
 			typeof a.vluchtduur === 'number' &&
 			a.vluchtduur > 33
@@ -132,9 +144,11 @@ export function getTimes(data: DutchFlight[], pilot: string, pilotId: number | n
 
 	// Find all xcountry attempts flights paid for by the pilot
 	const xcountryattemptFlights = data.filter((a) => {
-		// Check if the pilot was PIC or the paying member, and it's overland with valid flight duration < 33 minutes
+		// Check if the pilot was PIC or the paying member, and it's an overland glider flight (no
+		// TMG) with valid flight duration < 33 minutes
 		return (
 			(a.gezagvoerder_naam === pilot || (pilotId !== null && a.betalend_lid_id === pilotId)) &&
+			!isTmgFlight(a) &&
 			a.is_overland === true &&
 			typeof a.vluchtduur === 'number' &&
 			a.vluchtduur < 33
@@ -146,6 +160,9 @@ export function getTimes(data: DutchFlight[], pilot: string, pilotId: number | n
 		flightsCount: sumField(data, 'starts'),
 		picFlights,
 		picFlightsCount: sumField(picFlights, 'starts'),
+		gliderPicFlights,
+		gliderPicFlightsCount: sumField(gliderPicFlights, 'starts'),
+		gliderPicTime,
 		dboFlights,
 		dboFlightsCount: sumField(dboFlights, 'starts'),
 		paxFlights,

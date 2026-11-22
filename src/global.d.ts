@@ -91,6 +91,10 @@ declare interface Times {
 	flightsCount: number;
 	picFlights: Flight[];
 	picFlightsCount: number;
+	// PIC flights without touring motor glider (TMG) flights
+	gliderPicFlights: Flight[];
+	gliderPicFlightsCount: number;
+	gliderPicTime: number;
 	dboFlights: Flight[];
 	dboFlightsCount: number;
 	paxFlights: Flight[];
