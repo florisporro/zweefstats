@@ -10,6 +10,26 @@ function totalStartCount(stats: Stats, types: string[]) {
 	}, 0);
 }
 
+// Number of cross-country flights of at least the given distance in km (field `afstand`).
+// Clubreglement v14.6 §4.3 asks for a minimum number of 200 km or 300 km flights per type.
+function longXcountryFlightCount(stats: Stats, km: number) {
+	return stats.typeXcountryFlights.filter((flight) => Number(flight.afstand) >= km).length;
+}
+
+// An ICAO airport code is 4 capital letters. The first letter is the ICAO region, and the
+// letters I, J, Q and X are not assigned to any region (e.g. EHSB, EDLE, LFOI are valid).
+const icaoAirportCode = /^[A-HK-PR-WYZ][A-Z]{3}$/;
+
+// Outlandings whose arrival field is not an airfield. zweef.app logs an airfield by its ICAO
+// code (e.g. EHSB) and a field outside an airfield by its place name. Only a valid ICAO code
+// counts as an airfield; an empty arrival field still counts as an outlanding.
+function outlandingsAwayFromAirfields(stats: Stats) {
+	return stats.outlandings.filter((flight) => {
+		const arrival = typeof flight.aankomst_vliegveld === 'string' ? flight.aankomst_vliegveld.trim() : '';
+		return !icaoAirportCode.test(arrival);
+	}).length;
+}
+
 const commonRequirements = {
 	SPL: {
 		name: 'SPL',
@@ -126,6 +146,14 @@ const config: Permission[] = [
 			{
 				name: 'SPL of Aantekening van 2 bevoegde instructeurs',
 				calculate: commonRequirements.SPL.calculate
+			},
+			{
+				// Clubreglement v14.6 §4.2.4
+				name: 'Een volledig afgetekende EVO progressiekaart in de ACvZ.zweef.app'
+			},
+			{
+				// Clubreglement v14.6 §4.2.4
+				name: 'Aantekening in het logboek en een SOLO bevoegd verklaring in de ACvZ.zweef.app waaruit toestemming blijkt van twee bevoegde instructeurs'
 			}
 		]
 	},
@@ -137,7 +165,8 @@ const config: Permission[] = [
 				calculate: commonRequirements.SPL.calculate
 			},
 			{
-				name: 'Aantal solovluchten in tweezitter',
+				// Clubreglement v14.6 §4.2.5: "bij voorkeur", so recommended, not required
+				name: 'Aantal solovluchten in tweezitter (aanbevolen)',
 				goal: 2,
 				calculate: (stats) => {
 					return totalStartCount(stats, commonTypes.tweezitters);
@@ -153,7 +182,8 @@ const config: Permission[] = [
 		requirements: [
 			commonRequirements.SPL,
 			{
-				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min. Indien er eerst 15 starts op de LS-8 gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
+				// Clubreglement v14.6 §4.2.6
+				name: 'Twee goede overlesstarts op de Duo Discus met verschillende door de club daartoe aangewezen instructeurs, waarvan een thermische vlucht van minimaal 30 min. Indien er eerst 15 starts op de LS-8 gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
 			},
 			{
 				name: 'Overgelest zijn op de LS-4 door een bevoegde instructeur.'
@@ -171,7 +201,8 @@ const config: Permission[] = [
 		requirements: [
 			commonRequirements.SPL,
 			{
-				name: 'Twee overlesvluchten in Duo Discus waarvan een van tenminste 30 min. Indien er eerst 15 starts op de LS4b gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
+				// Clubreglement v14.6 §4.2.7
+				name: 'Twee goede overlesstarts op de Duo Discus met verschillende door de club daartoe aangewezen instructeurs, waarvan een thermische vlucht van minimaal 30 min. Indien er eerst 15 starts op de LS4b gemaakt zijn dan vervalt de eis van 2 overlesstarts en kan voldaan worden met een overles briefing.'
 			},
 			{
 				// Clubreglement v14.6 §4.2.7
@@ -218,14 +249,17 @@ const config: Permission[] = [
 				calculate: (stats) => stats.timesAfterExam.picTime / 60
 			},
 			{
-				name: 'Tenminste 100 starts op de LS-8 / Duo Discus (XLT) /ASW-27 of gelijkwaardig type',
+				// Clubreglement v14.6 §4.2.11: the ASG-29 counts as an equivalent type, as it does for
+				// the "20 starts op de ASW-27 en/of ASG29" requirement below
+				name: 'Tenminste 100 starts op de LS-8 / Duo Discus (XLT) / ASW-27 / ASG-29 of gelijkwaardig type',
 				goal: 100,
 				calculate: (stats) =>
 					totalStartCount(stats, [
 						...commonTypes.ls4,
 						...commonTypes.ls8,
 						...commonTypes.duo,
-						...commonTypes.asw27
+						...commonTypes.asw27,
+						...commonTypes.asg29
 					])
 			},
 			{
@@ -362,10 +396,14 @@ const config: Permission[] = [
 				name: 'Pax check flight by FI(s)'
 			},
 			{
-				name: '> 10 uur of 45 starts als PIC sinds SPL (EASA)',
+				// EASA.SFCL.115(a)(2)(ii)(A): "at least 10 hours of flight time or 30 launches or take-offs
+				// and landings as PIC on sailplanes" after the issue of the SPL. A powered sailplane (and so
+				// a TMG) is a sailplane in this regulation, so TMG flights count here.
+				// https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02018R1976-20211115
+				name: 'Minimaal 10 uur of 30 starts als PIC sinds SPL (EASA.SFCL.115)',
 				calculate: (stats) => {
-					if (stats.timesAfterExam.picTime / 60 > 10) return 1;
-					if (stats.timesAfterExam.picFlightsCount > 45) return 1;
+					if (stats.timesAfterExam.picTime / 60 >= 10) return 1;
+					if (stats.timesAfterExam.picFlightsCount >= 30) return 1;
 					return 0;
 				}
 			},
@@ -390,6 +428,28 @@ const config: Permission[] = [
 			},
 			{
 				name: 'Voldoen aan de SFCL eisen omtrent passagiers vliegen EASA.SFCL.115'
+			},
+			{
+				// Clubreglement v14.6 §4.2.14: for passenger flights the recency of EASA.SFCL.160(e)
+				// always applies: at least 3 launches as PIC in sailplanes (no TMG) in the last 90 days.
+				// EASA.SFCL.160(e)(1): "three launches in sailplanes, excluding TMGs"
+				// https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02018R1976-20211115
+				name: 'Minimaal 3 starts als gezagvoerder in de afgelopen 90 dagen (zweefvliegtuig, geen TMG)',
+				goal: 3,
+				calculate: (stats) => {
+					const now = new Date();
+					const ninetyDaysAgo = new Date();
+					ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+					return stats.picFlights
+						.filter((flight) => {
+							if (typeof flight.datum !== 'string') return false;
+							if (flight.start_methode === 'tmg') return false;
+							const flightDate = new Date(flight.datum);
+							return flightDate >= ninetyDaysAgo && flightDate <= now;
+						})
+						.reduce((total, flight) => total + (typeof flight.starts === 'number' ? flight.starts : 0), 0);
+				}
 			}
 		]
 	},
@@ -411,20 +471,24 @@ const config: Permission[] = [
 		requirements: [
 			commonRequirements.SPL,
 			{
+				// Clubreglement v14.6 §4.2.13: "10 overlandvluchten". Counts starts (sum of the starts field)
 				name: 'Minimaal 10 overland vluchten',
 				goal: 10,
-				calculate: (stats) => stats.xcountryFlightsCount
+				calculate: (stats) => stats.typeXcountryFlightsCount
 			},
 			{
-				name: 'Minimaal 2 buitenlandingen',
+				// Clubreglement v14.6 §4.2.13: "Een landing op een ander vliegveld geldt in deze niet
+				// als buitenlanding."
+				name: 'Minimaal 2 buitenlandingen, niet op een ander vliegveld',
 				goal: 2,
-				calculate: (stats) => stats.outlandings.length
+				calculate: (stats) => outlandingsAwayFromAirfields(stats)
 			},
 			{
 				name: 'Theorie cursus club gevolgd'
 			},
 			{
-				name: 'Twee goede instructie / examen starts op de Duo Discus XLT of Arcus T met verschillende door de club daartoe aangewezen instructeurs.'
+				// Clubreglement v14.6 §4.2.13
+				name: 'Twee goede instructie / examen starts op de Duo Discus XLT of Arcus T met verschillende door de club daartoe aangewezen turbo instructeurs.'
 			}
 		]
 	},
@@ -489,10 +553,11 @@ const config: Permission[] = [
 			crossCountryCommonRequirements.typeEndorsement,
 			crossCountryCommonRequirements.rigging,
 			{
+				// Clubreglement v14.6 §4.3.3: "Tenminste 2 overlandvluchten". Counts flights (logbook rows)
 				name: 'Tenminste 2 overlandvluchten',
 				goal: 2,
 				calculate: (stats) => {
-					return stats.xcountryFlights.length;
+					return stats.typeXcountryFlights.length;
 				}
 			}
 		]
@@ -521,10 +586,11 @@ const config: Permission[] = [
 			crossCountryCommonRequirements.typeEndorsement,
 			crossCountryCommonRequirements.rigging,
 			{
+				// Clubreglement v14.6 §4.3.4: "Tenminste 2 overlandvluchten". Counts flights (logbook rows)
 				name: 'Tenminste 2 overlandvluchten',
 				goal: 2,
 				calculate: (stats) => {
-					return stats.xcountryFlights.length;
+					return stats.typeXcountryFlights.length;
 				}
 			}
 		]
@@ -552,20 +618,24 @@ const config: Permission[] = [
 			crossCountryCommonRequirements.typeEndorsement,
 			crossCountryCommonRequirements.rigging,
 			{
+				// Clubreglement v14.6 §4.3.5: "4 overlandvluchten waarvan minimaal 2 van tenminste 200 kilometer". Counts flights (logbook rows)
 				name: '4 overlandvluchten',
 				goal: 4,
 				calculate: (stats) => {
-					return stats.xcountryFlights.length;
+					return stats.typeXcountryFlights.length;
 				}
 			},
 			{
-				name: 'Minimaal 2 overlandvluchten van tenminste 200 kilometer'
+				name: 'Minimaal 2 overlandvluchten van tenminste 200 kilometer',
+				goal: 2,
+				calculate: (stats) => longXcountryFlightCount(stats, 200)
 			},
 			{
+				// Clubreglement v14.6 §4.3.5: "Tenminste 2 van deze overlandvluchten" on a LS-4b/LS-8 or equivalent type
 				name: 'Tenminste 2 van deze overlandvluchten op LS-4b/LS-8 of gelijkwaardig type',
 				goal: 2,
 				calculate: (stats) => {
-					const relevantFlights = stats.xcountryFlights.filter((flight) =>
+					const relevantFlights = stats.typeXcountryFlights.filter((flight) =>
 						[...commonTypes.ls4, ...commonTypes.ls8].includes(flight.type || '')
 					);
 					return relevantFlights.length;
@@ -595,18 +665,22 @@ const config: Permission[] = [
 			crossCountryCommonRequirements.overlandBriefing,
 			crossCountryCommonRequirements.DDIPermission,
 			{
+				// ASG-29E: no cross-country paragraph in Clubreglement v14.6. Counts starts (sum of the starts field)
 				name: '10 overlandvluchten',
 				goal: 10,
-				calculate: (stats) => stats.xcountryFlightsCount
+				calculate: (stats) => stats.typeXcountryFlightsCount
 			},
 			{
-				name: 'Minimaal 3 overlandvluchten van tenminste 200 kilometer'
+				name: 'Minimaal 3 overlandvluchten van tenminste 200 kilometer',
+				goal: 3,
+				calculate: (stats) => longXcountryFlightCount(stats, 200)
 			},
 			{
+				// ASG-29E: no cross-country paragraph in Clubreglement v14.6
 				name: 'Tenminste 1 van deze overlandvluchten op ASW-27 of gelijkwaardig type',
 				goal: 1,
 				calculate: (stats) => {
-					const relevantFlights = stats.xcountryFlights.filter(
+					const relevantFlights = stats.typeXcountryFlights.filter(
 						(flight) => commonTypes.asw27.includes(flight.type || '')
 					);
 					return relevantFlights.length;
@@ -639,19 +713,25 @@ const config: Permission[] = [
 			crossCountryCommonRequirements.threeGoodLandings,
 			crossCountryCommonRequirements.overlandBriefing,
 			crossCountryCommonRequirements.DDIPermission,
+			crossCountryCommonRequirements.typeEndorsement,
+			crossCountryCommonRequirements.rigging,
 			{
+				// Clubreglement v14.6 §4.3.9: "12 overlandvluchten waarvan minimaal 3 van tenminste 300 kilometer". Counts starts (sum of the starts field)
 				name: '12 overlandvluchten',
 				goal: 12,
-				calculate: (stats) => stats.xcountryFlightsCount
+				calculate: (stats) => stats.typeXcountryFlightsCount
 			},
 			{
-				name: 'Minimaal 3 overlandvluchten van tenminste 300 kilometer'
+				name: 'Minimaal 3 overlandvluchten van tenminste 300 kilometer',
+				goal: 3,
+				calculate: (stats) => longXcountryFlightCount(stats, 300)
 			},
 			{
+				// Clubreglement v14.6 §4.3.9: "Tenminste 2 van deze overlandvluchten" on a Duo Discus (XLT)
 				name: 'Tenminste 2 van deze overlandvluchten op een Duo Discus (XLT)',
 				goal: 2,
 				calculate: (stats) =>
-					stats.xcountryFlights.filter((flight) =>
+					stats.typeXcountryFlights.filter((flight) =>
 						commonTypes.duo.includes(flight.type || '')
 					).length
 			},
@@ -684,20 +764,24 @@ const config: Permission[] = [
 			crossCountryCommonRequirements.typeEndorsement,
 			crossCountryCommonRequirements.rigging,
 			{
+				// Clubreglement v14.6 §4.3.6: "de eisen zoals gesteld voor de ASW 27" (§4.3.5: "4 overlandvluchten"). Counts flights (logbook rows)
 				name: '4 overlandvluchten',
 				goal: 4,
 				calculate: (stats) => {
-					return stats.xcountryFlights.length;
+					return stats.typeXcountryFlights.length;
 				}
 			},
 			{
-				name: 'Minimaal 2 overlandvluchten van tenminste 200 kilometer'
+				name: 'Minimaal 2 overlandvluchten van tenminste 200 kilometer',
+				goal: 2,
+				calculate: (stats) => longXcountryFlightCount(stats, 200)
 			},
 			{
+				// Clubreglement v14.6 §4.3.6 via §4.3.5: "Tenminste 2 van deze overlandvluchten" on a LS-4b/LS-8 or equivalent type
 				name: 'Tenminste 2 van deze overlandvluchten op LS-4b/LS-8 of gelijkwaardig type',
 				goal: 2,
 				calculate: (stats) => {
-					const relevantFlights = stats.xcountryFlights.filter((flight) =>
+					const relevantFlights = stats.typeXcountryFlights.filter((flight) =>
 						[...commonTypes.ls4, ...commonTypes.ls8].includes(flight.type || '')
 					);
 					return relevantFlights.length;
@@ -729,12 +813,15 @@ const config: Permission[] = [
 			crossCountryCommonRequirements.typeEndorsement,
 			crossCountryCommonRequirements.rigging,
 			{
+				// Clubreglement v14.6 §4.3.7: "10 overlandvluchten waarvan minimaal 4 van tenminste 200 kilometer". Counts starts (sum of the starts field)
 				name: '10 overlandvluchten',
 				goal: 10,
-				calculate: (stats) => stats.xcountryFlightsCount
+				calculate: (stats) => stats.typeXcountryFlightsCount
 			},
 			{
-				name: 'Minimaal 4 overlandvluchten van tenminste 200 kilometer'
+				name: 'Minimaal 4 overlandvluchten van tenminste 200 kilometer',
+				goal: 4,
+				calculate: (stats) => longXcountryFlightCount(stats, 200)
 			},
 			{
 				name: 'Minimaal 2 buitenlandingen',
@@ -743,6 +830,10 @@ const config: Permission[] = [
 			},
 			{
 				name: 'Bevoegd verklaring in ACvZ.zweef.app met toestemming voor motorgebruik in geval van de Duo Discus XLT'
+			},
+			{
+				// Clubreglement v14.6 §4.3.7
+				name: 'Let op: bij overlandvluchten tijdens het reguliere vliegbedrijf vanaf Soesterberg of tijdens clubkampen dient de tweede inzittende een SPL-houder te zijn die lid is van de ACvZ.'
 			}
 		]
 	},
@@ -770,14 +861,17 @@ const config: Permission[] = [
 			crossCountryCommonRequirements.typeEndorsement,
 			crossCountryCommonRequirements.rigging,
 			{
+				// Clubreglement v14.6 §4.3.11: "4 overlandvluchten waarvan minimaal 2 van tenminste 200 kilometer". Counts flights (logbook rows)
 				name: '4 overlandvluchten',
 				goal: 4,
 				calculate: (stats) => {
-					return stats.xcountryFlights.length;
+					return stats.typeXcountryFlights.length;
 				}
 			},
 			{
-				name: 'Minimaal 2 overlandvluchten van tenminste 200 kilometer'
+				name: 'Minimaal 2 overlandvluchten van tenminste 200 kilometer',
+				goal: 2,
+				calculate: (stats) => longXcountryFlightCount(stats, 200)
 			}
 		]
 	}

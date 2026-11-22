@@ -121,6 +121,9 @@ declare interface Stats extends Times {
 	timesAfterExam: Times;
 	xcountryFlights: Flight[];
 	xcountryattemptFlights: Flight[];
+	// Cross-country flights of at least 100 km, plus the D-brevet 50 km flight (Clubreglement §4.3)
+	typeXcountryFlights: Flight[];
+	typeXcountryFlightsCount: number;
 	outlandings: Flight[];
 	dates: FlightProps[];
 	flightsByDate: FlightsBy;

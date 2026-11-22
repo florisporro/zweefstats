@@ -119,6 +119,10 @@ export function getTimes(data: DutchFlight[], pilot: string, pilotId: number | n
 	const paxTimeFormatted = formatTime(paxTime);
 	const instructorTimeFormatted = formatTime(instructorTime);
 
+	// Clubreglement v14.6 §4.3: an "overlandvlucht op type" is an announced cross-country flight of
+	// at least 100 km (checked in typeXcountryFlightsOf). §5.7: after half an hour it must be clear
+	// whether an attempt is continued. The club applies half an hour +/- 10% (not written in the
+	// reglement), so flights of 33 minutes or less are counted as attempts (overlandpogingen).
 	// Find all xcountry flights paid for by the pilot
 	const xcountryFlights = data.filter((a) => {
 		// Check if the pilot was PIC or the paying member, and it's overland with valid flight duration > 33 minutes
@@ -137,7 +141,7 @@ export function getTimes(data: DutchFlight[], pilot: string, pilotId: number | n
 			(a.gezagvoerder_naam === pilot || (pilotId !== null && a.betalend_lid_id === pilotId)) &&
 			a.is_overland === true &&
 			typeof a.vluchtduur === 'number' &&
-			a.vluchtduur < 33
+			a.vluchtduur <= 33
 		);
 	});
 
@@ -184,6 +188,22 @@ function averageFlightProperty(property: string, timesObject: FlightsBy): number
 	return filteredArray.reduce((a, b) => a + b, 0) / filteredArray.length;
 }
 
+// Clubreglement v14.6 §4.3: "Onder een overlandvlucht op type wordt verstaan een aangemelde
+// overlandvlucht van minimaal 100 kilometer, echter mag de eerste succesvolle 50 kilometer
+// doelvlucht voor het D-brevet eveneens worden beschouwd als een overlandvlucht van 100 kilometer."
+// The logbook does not mark the D-brevet flight, so the earliest cross-country flight of 50 km or
+// more is taken as that flight. Flights without a distance (0 or empty) are kept: their length is
+// unknown.
+export function typeXcountryFlightsOf(xcountryFlights: Flight[]): Flight[] {
+	const distance = (flight: Flight) => Number(flight.afstand) || 0;
+	const dBrevetFlight = xcountryFlights
+		.filter((flight) => distance(flight) >= 50)
+		.sort((a, b) => String(a.datum).localeCompare(String(b.datum)))[0];
+	return xcountryFlights.filter(
+		(flight) => distance(flight) === 0 || distance(flight) >= 100 || flight === dBrevetFlight
+	);
+}
+
 export function getStatistics(data: DutchFlight[], examDateOverride?: string): Stats {
 	// Find the most likely name of the pilot
 	const pilots: string[] = [
@@ -201,6 +221,9 @@ export function getStatistics(data: DutchFlight[], examDateOverride?: string): S
 		data.find((a) => a.gezagvoerder_naam === pilot)?.gezagvoerder_id || null;
 
 	const complete = getTimes(data, pilot, pilotId);
+
+	// Cross-country flights that count for the club's per-type requirements (§4.3)
+	const typeXcountryFlights = typeXcountryFlightsOf(complete.xcountryFlights);
 
 	// Find all flights where arrival airfield was buitenlanding
 	const outlandings = data.filter((a) => a.aankomst_vliegveld !== a.vertrek_vliegveld);
@@ -304,6 +327,8 @@ export function getStatistics(data: DutchFlight[], examDateOverride?: string): S
 		pilot,
 		pilotId,
 		...complete,
+		typeXcountryFlights,
+		typeXcountryFlightsCount: sumField(typeXcountryFlights, 'starts'),
 		outlandings,
 		dates,
 		flightsByDate,
